@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+.history-page {
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+.history-page h1 {
+  margin: 15px 0px 20px 0;
+  font-size: 1.8em;
+  color: black;
+}
+
+.clear-history-button {
+  padding: 10px 20px;
+  background-color: #5194cb;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.clear-history-button:hover {
+  background-color: #2b79b9;
+}
+
+.console {
+  background-color: #333;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+  overflow-y: auto;
+  max-height: 74vh; 
+  font-family: 'Roboto Mono', monospace;
+}
+
+.console-item {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.timestamp {
+  color: rgb(34, 147, 223);
+  font-weight: bold;
+}
+
+.type {
+  color: rgb(34, 147, 223);
+  font-weight: bold;
+}
+
+.type-warning {
+  color: #d9a000;
+  font-weight: bold;
+}
+
+.type-error {
+  color: #ff4d4d;
+  font-weight: bold;
+}
+
+.action {
+  color: rgb(34, 147, 223);
+  font-weight: bold;
+}
+
+.details {
+  color: #ffffff;
+}
+
+.no-history {
+  text-align: center;
+  color: #888;
+  font-size: 1.2em;
+}
+
+@media (max-width: 768px) {
+  .history-page {
+    padding: 0px;
+  }
+
+  .clear-history-button {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .console {
+    padding: 10px;
+  }
+}

@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+bcrypt
+pydantic
+pydantic_settings
+python-jose
+passlib
+python-multipart
+websockets
+pytz
+paho-mqtt
+python-dotenv

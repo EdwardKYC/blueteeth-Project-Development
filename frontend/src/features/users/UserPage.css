@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+.user-page {
+  font-family: 'Inter';
+}
+
+.user-page h1 {
+  font-size: 1.5em;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 16px;
+  text-align: left;
+  background-color: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.modern-table th {
+  padding: 15px 15px;
+  font-weight: 700;
+  background-color: #5e98b1;
+  color: white;
+}
+
+.modern-table td {
+  padding: 12px 15px;
+  color: #535353;
+}
+
+.modern-table tbody tr:hover {
+  background-color: #f4fbfe;
+}
+
+.device-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border: 2px solid;
+  border-radius: 20px; 
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  color: inherit;
+  width: 80px;
+  background-color: transparent;
+}

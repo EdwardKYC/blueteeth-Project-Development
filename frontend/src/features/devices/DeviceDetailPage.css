@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+.device-detail-page {
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.device-detail-page h1 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #333;
+}
+
+.detail-container {
+  display: grid;
+  align-items: start;
+  grid-template-columns: 1fr;
+  gap: 2.5em;
+}
+
+.detail-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.detail-card h2 {
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-content-header {
+  background-color: #5e98b1;
+  padding: 10px 20px;
+  color: white;
+  font-weight: 500;
+  font-size: 1.2em;
+}
+
+.detail-item, .no-data {
+  padding: 10px 15px;
+  background-color: #ffffff;
+  font-size: 1rem;
+}
+
+.detail-content .detail-item:nth-child(even) {
+  background-color: #f0efef;
+}
+
+.no-data {
+  color: #888;
+}
+
+.detail-user-color-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-user-color {
+  padding: .6em;
+  border-radius: 1em;
+}
+
+@media (min-width: 768px) {
+  .detail-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+  }
+}

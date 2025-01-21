@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+.sidebar {
+  height: 100vh;
+  background-color: #ffffff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 100;
+  font-family: 'Inter', sans-serif;
+  transition: width 0.3s ease, transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+}
+
+.sidebar.expanded {
+  width: 12em;
+}
+
+.sidebar.collapsed {
+  width: 3.3em;
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5em;
+  color: white;
+}
+
+.sidebar-list {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1em 0em 0em;
+}
+
+.sidebar-item {
+  list-style: none;
+}
+
+.sidebar-item a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 11px 12px;
+  color: #4a5568;
+  transition: padding 0.3s ease;
+}
+
+.sidebar-item a .icon {
+  font-size: 24px;
+}
+
+.sidebar-item a:hover {
+  background-color: #ebf4ff;  
+  color: #4a5568;
+}
+
+.sidebar-item a.active {
+  background-color: #c3dafe;
+  color: #434190;
+}
+
+.sidebar.expanded .icon {
+  margin-right: .8em;
+}
+
+.sidebar.expanded .sidebar-item a .title {
+  display: inline-block;
+}
+
+.sidebar.collapsed .sidebar-item a .title {
+  display: none;
+}
+
+/* Sidebar Mobile View */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 3.2em;
+    left: 0;
+    width: 250px;
+    height: calc(100vh - 50px);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .sidebar.expanded {
+    transform: translateX(0);
+  }
+}

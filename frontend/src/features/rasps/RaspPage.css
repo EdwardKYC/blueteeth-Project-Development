@@ -1,0 +1,132 @@
+.rasp-page {
+    font-family: 'Inter', sans-serif;
+    padding: 20px;
+}
+
+.rasp-page h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.rasp-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.rasp-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.rasp-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 10px;
+}
+
+.rasp-card-profile {
+    display: flex;
+    gap: 1em;
+}
+
+.profile-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.profile-circle.s {
+    color: #f49aa1;
+    background-color: #fbe4e6;
+}
+
+.profile-circle.w {
+    color: #5dade6;
+    background-color: #eaf4fb;
+}
+
+.profile-circle.e {
+    color: #4ac06f;
+    background-color: #e8fbee;
+}
+
+.profile-circle.n {
+    color: #e9a42c;
+    background-color: #f5e7cb;
+}
+
+.rasp-info h2 {
+    font-size: 1.3em;
+    margin: 0;
+    font-weight: 300;
+    color: #333;
+}
+
+.rasp-info p {
+    font-size: 0.9em;
+    color: #666;
+    margin: 5px 0 0;
+}
+
+.expand-button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #888;
+    transition: transform 0.2s;
+}
+
+.expand-button:hover {
+    color: #555;
+}
+
+.rasp-card-body {
+    margin-top: 15px;
+    padding: 10px 0px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.user-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 1em;
+    overflow-x: auto;
+}
+
+.user-item {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .3em;
+    align-items: center;
+    padding: 5px 0;
+    width: 7em;
+    background-color: rgb(242, 242, 242);
+    border-radius: .4em;
+}
+
+.user-name {
+    font-size: 1em;
+    color: rgb(133, 133, 133);
+}
+
+.user-direction {
+    font-size: 3em;
+    color: rgb(133, 133, 133);
+    
+}
