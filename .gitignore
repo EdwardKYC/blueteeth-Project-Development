@@ -27,7 +27,3 @@ node_modules/
 frontend/dist/
 frontend/build/
 frontend/.cache/
-
-# 忽略 Docker 容器中的臨時文件
-mosquitto/data/
-mosquitto/log/
