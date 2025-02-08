@@ -25,18 +25,17 @@ async def register_rasp(
     cord_x = params.cord_x
     cord_y = params.cord_y
 
-    try:
-        validated_facing = CardinalDirection[facing.upper()] 
-    except KeyError:
+    if facing.upper() not in CardinalDirection.__members__:
         await history.log_warning(
             db=db,
             action="Register Rasp",
-            details=f"Invalid facing value '{facing}' provided for Rasp '{rasp_id}'."
+            details=f"Invalid facing value '{facing}' provided."
         )
         raise HTTPException(
-            status_code=400, 
-            detail=f"Invalid facing value '{facing}'. Must be one of {', '.join([d.name for d in CardinalDirection])}"
+            status_code=400,
+            detail=f"Invalid facing value '{facing}'. Must be one of {', '.join(CardinalDirection.__members__.keys())}"
         )
+    validated_facing = CardinalDirection[facing.upper()] 
     
     rasp_count = db.query(Rasp).count()
     rasp_id = f"rasp{rasp_count + 1}"
