@@ -25,18 +25,16 @@ router = APIRouter(
 )
 
 @router.post("/login")
-async def login_for_access_token(
-        form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
-):
+async def login_for_access_token(user_data: UserAuthSchema, db: Session = Depends(get_db)):
     """
     Authenticates a user and generates an access token.
 
-    :param form_data: Form data containing username and password.
+    :param user_data: JSON containing username and password.
     :param db: Database session dependency.
     :return: JSON with access token and token type.
     """
     try:
-        user = validate_user_credentials(db, form_data.username, form_data.password)
+        user = validate_user_credentials(db, user_data.username, user_data.password)
         
         if not user:
             raise HTTPException(status_code=401, detail="Invalid username or password")
@@ -53,7 +51,7 @@ async def login_for_access_token(
         }
     
     except HTTPException as http_exc:
-        await history.log_info(db=db, action="Login", details=f"User {form_data.username} failed to login. {http_exc.detail}")
+        await history.log_info(db=db, action="Login", details=f"User {user_data.username} failed to login. {http_exc.detail}")
         raise http_exc
     
     except Exception as e:
