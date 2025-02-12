@@ -9,7 +9,7 @@ from src.services.mqtt.message import MQTTMessageHandler
 
 mqtt_message_handler = MQTTMessageHandler()
 
-def toggle_user_rasp(user: User, db: Session, rasp_id: str = None, direction: RelativeDirection = None):
+def toggle_user_rasp(user: User, db: Session, rasp_id: str = None, color: str = None, direction: RelativeDirection = None):
     if not rasp_id:
         rasp_links = db.query(UserRaspLink).filter(UserRaspLink.user_id == user.id).all()
         if not rasp_links:
@@ -34,7 +34,7 @@ def toggle_user_rasp(user: User, db: Session, rasp_id: str = None, direction: Re
 
     new_link = UserRaspLink(user_id=user.id, rasp_id=rasp_id, direction=direction.value)
     db.add(new_link)
-    mqtt_message_handler.add_rasp_direction(rasp_id=rasp_id, user_name=user.username, direction=direction.value)
+    mqtt_message_handler.add_rasp_direction(rasp_id=rasp_id, user_name=user.username, direction=direction.value, color=color)
 
 
 def toggle_user_device(user: User, db: Session, device_id: str = None, color: str = None):

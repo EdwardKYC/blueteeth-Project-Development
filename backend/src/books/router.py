@@ -125,7 +125,7 @@ async def navigate_to_book(
 
     try:
         for rasp_id, direction in rasp_directions:
-            toggle_user_rasp(rasp_id=rasp_id, user=user, db=db, direction=direction)
+            toggle_user_rasp(rasp_id=rasp_id, user=user, db=db, direction=direction, color=unique_color)
             await websocket_message_handler.add_rasp_direction(rasp_id=rasp_id, username=user.username, direction=direction.value)
 
         toggle_user_book(book_id=book_id, user=user, db=db)

@@ -19,12 +19,13 @@ class MQTTMessageHandler(metaclass=SingletonMeta):
             raise ValueError(f"No associated rasp found for device_id {device_id}")
         return device.rasp_id
 
-    def add_rasp_direction(self, rasp_id: str, user_name: str, direction: str):
+    def add_rasp_direction(self, rasp_id: str, user_name: str, direction: str, color: str):
         topic = self.TOPIC_TEMPLATE.format(rasp_id=rasp_id)
         payload = {
             "action": "add_rasp_direction",
             "userName": user_name,
-            "direction": direction
+            "direction": direction,
+            "color": color
         }
         self.mqtt_client.publish(topic, payload)
 
