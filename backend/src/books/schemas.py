@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 class SearchBookSchema(BaseModel):
-    search_term: str = Field(..., min_length=1, max_length=255, description="The term to search for books")
+    search_term: str = Field(..., min_length=0, max_length=255, description="The term to search for books")
 
 class RegisterBookSchema(BaseModel):
     name: str = Field(..., min_length=1, max_length=255, description="The name of the book")
