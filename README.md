@@ -157,7 +157,7 @@ RESPONSE（沒找到書）
 執行導航
 
 ```json
-GET /api/v1/books/navigate
+POST /api/v1/books/navigate
 {
   "book_id": 1
 }
