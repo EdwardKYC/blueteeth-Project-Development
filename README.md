@@ -96,11 +96,10 @@ VITE_BASE_URL=https://d247-49-159-183-84.ngrok-free.app
 登入
 
 ```json
-GET /api/v1/users/login
-{
-    "username": "yozen0405",
-    "password": "test1234"
-}
+POST /api/v1/users/login
+Content-Type: application/x-www-form-urlencoded
+
+username=yozen0405&password=test1234
 
 RESPONSE
 {
@@ -110,10 +109,18 @@ RESPONSE
 }
 ```
 
+> 登入的部分可能不太清楚，這邊是 curl 的範例
+
+```bash
+curl -X POST "http://localhost/api/v1/users/login" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "username=yozen0405&password=test1234"
+```
+
 註冊
 
 ```json
-GET /api/v1/users/register
+POST /api/v1/users/register
 {
     "username": "yozen0405",
     "password": "test1234"
