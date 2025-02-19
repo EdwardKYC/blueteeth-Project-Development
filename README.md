@@ -93,7 +93,7 @@ VITE_BASE_URL=https://d247-49-159-183-84.ngrok-free.app
 
 ## API 端點示例
 
-登入：
+登入
 
 ```json
 GET /api/v1/users/login
@@ -126,6 +126,60 @@ RESPONSE
 }
 ```
 
+搜尋書籍
+
+```json
+POST /api/v1/books/search_book
+{
+  "search_term": "我"
+}
+
+RESPONSE（有找到書）
+[
+  {
+    "id": 2,
+    "name": "關於我轉生變成史萊姆這檔事",
+    "description": "當命運賜予平凡的靈魂一具史萊姆之軀，他卻以智慧與勇氣翻轉世界，成為萬眾敬畏的傳奇。"
+  },
+  {
+    "id": 5,
+    "name": "我的英雄學院 第5卷：轟焦凍",
+    "description": "冰火交織的少年，掙脫宿命枷鎖，尋求自我救贖。"
+  }
+]
+
+RESPONSE（沒找到書）
+{
+  "detail": "No books found matching the search term."
+}
+```
+
+執行導航
+
+```json
+GET /api/v1/books/navigate
+{
+  "book_id": 1
+}
+
+RESPONSE
+{
+  "message": "Successfully navigate for user yozen0405",
+  "displayed_color": "#b7b106"
+}
+```
+
+取消導航
+
+```json
+GET /api/v1/books/cancel-navigation
+
+RESPONSE
+{
+  "message": "Successfully canceled navigation!"
+}
+```
+
 ## MQTT 訊息
 
 訂閱示例，rasp/rasp2 可換成想訂閱的樹莓派 id：
@@ -145,4 +199,3 @@ mosquitto_sub -h localhost -p 1883 -t "rasp/rasp2"
 
 {"action": "add_device_color", "userName": "yozen0405", "color": "#038fc2", "deviceId": "device3"}
 ```
-
