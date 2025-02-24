@@ -39,7 +39,7 @@ async def main():
             for d in target_devices:
                 print(f"   - {d.name} ({d.address})")
 
-            await asyncio.gather(*(connect_to_device(d) for d in target_devices))
+            await asyncio.gather(*(connect_and_listen(d) for d in target_devices))
         else:
             print("未掃描到目標裝置，5 秒後重試...")
         
