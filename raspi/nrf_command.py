@@ -1,13 +1,15 @@
-from bleak import BleakClient
 import asyncio
-
+from bleak import BleakClient
+print(BleakClient)
 BT_UUID_CUSTOM_SERVICE = "0c71e180-65d9-4497-8ca4-a65d86d5003b"
 BT_UUID_CUSTOM_CHAR = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+NOTIFY_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+
+def notification_handler(sender, data):
+    print(f"收到來自 {sender} 的通知: {data}")
 
 async def send_message_to_ble_device(client, message):
     try:
-        print("開始傳送訊息...")
-        encoded_message = message.encode('utf-8')
         """
         services = await client.get_services()
         for service in services:
@@ -15,8 +17,12 @@ async def send_message_to_ble_device(client, message):
             for char in service.characteristics:
                 print("  Characteristic:", char.uuid, "Properties:", char.properties)
         """
-        await client.write_gatt_char(BT_UUID_CUSTOM_CHAR, encoded_message)
+        print("開始傳送訊息...")
+        encoded_message = (message + "\n").encode('utf-8')
+        await asyncio.sleep(0.1)
+        await client.write_gatt_char(BT_UUID_CUSTOM_CHAR, encoded_message , response = False)
         print(f"訊息已發送: {message}")
+
     except Exception as e:
         print(f"發送訊息時發生錯誤: {e}")
 
