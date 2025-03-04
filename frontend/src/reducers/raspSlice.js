@@ -24,13 +24,13 @@ const raspSlice = createSlice({
       rasp.users = rasp.users.filter((user) => user.name !== userName);
     },
     addUserToRasp(state, action) {
-      const { raspId, userName, direction } = action.payload;
+      const { raspId, userName, direction, color } = action.payload;
 
       const rasp = state.byId[raspId] || { id: raspId, users: [] };
 
       const userExists = rasp.users.some((user) => user.name === userName);
       if (!userExists) {
-        rasp.users.push({ name: userName, direction });
+        rasp.users.push({ name: userName, direction, color });
       }
 
       state.byId[raspId] = rasp; 

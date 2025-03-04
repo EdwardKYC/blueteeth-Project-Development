@@ -40,10 +40,10 @@ export const handleAddDeviceColor = ({ username, device_id, color }) => {
 	store.dispatch(addUserToDevice({ userName: username, deviceId: device_id, color: color }));
 };
 
-export const handleAddRaspDirection = ({ rasp_id, username, direction }) => {
+export const handleAddRaspDirection = ({ rasp_id, username, direction, color }) => {
 	// Dispatch actions to update User and Rasp in Redux
-	store.dispatch(addRaspToUser({ userName: username, raspId: rasp_id, direction: direction }));
-	store.dispatch(addUserToRasp({ userName: username, raspId: rasp_id, direction: direction }));
+	store.dispatch(addRaspToUser({ userName: username, raspId: rasp_id, direction: direction, color: color }));
+	store.dispatch(addUserToRasp({ userName: username, raspId: rasp_id, direction: direction, color: color }));
 };
 
 export const handleCancelNavigation = ({ username }) => {
@@ -139,13 +139,13 @@ export const handleRegisterUser = ({ username, book, device, rasps = [] }) => {
         store.dispatch(addUserToDevice({ userName: username, deviceId: device.id, color: device.color }));
     }
 
-    rasps.forEach(({ id, direction }) => {
-        if (!id || !direction) {
-            console.warn("Incomplete rasp link for user:", username, id, direction);
+    rasps.forEach(({ id, direction, color }) => {
+        if (!id || !direction || !color) {
+            console.warn("Incomplete rasp link for user:", username, id, direction, color);
             return;
         }
         store.dispatch(addRaspToUser({ userName: username, raspId: id, direction }));
-        store.dispatch(addUserToRasp({ raspId: id, userName: username, direction }));
+        store.dispatch(addUserToRasp({ raspId: id, userName: username, direction, color }));
     });
 };
 

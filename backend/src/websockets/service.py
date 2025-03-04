@@ -30,11 +30,11 @@ class WebSocketMessageHandler(metaclass=SingletonMeta):
         }
         await self.manager.send_message(message)
 
-    async def add_rasp_direction(self, rasp_id: str, username: str, direction: str):
+    async def add_rasp_direction(self, rasp_id: str, username: str, direction: str, color: str):
         """發送 add_rasp_direction 消息"""
         message = {
             "type": "add_rasp_direction",
-            "payload": {"rasp_id": rasp_id, "username": username, "direction": direction}
+            "payload": {"rasp_id": rasp_id, "username": username, "direction": direction, "color": color}
         }
         await self.manager.send_message(message)
 

@@ -55,7 +55,7 @@ const RaspPage = () => {
                               className="user-direction"
                               icon={directionIcons[user.direction]}
                             />
-                            <span className="user-name">{user.name}</span>
+                            <span className="user-name" style={{ color: user.color }}>{user.name}</span>
                           </li>
                         ))}
                       </ul>

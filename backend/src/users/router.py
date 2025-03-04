@@ -109,7 +109,8 @@ def get_all_users(db: Session = Depends(get_db)):
             "rasps": [
                 {
                     "id": link.rasp.id,
-                    "direction": link.direction
+                    "direction": link.direction,
+                    "color": user.current_device.color
                 }
                 for link in user.current_rasps
             ],
