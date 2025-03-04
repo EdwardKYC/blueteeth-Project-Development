@@ -187,6 +187,55 @@ RESPONSE
 }
 ```
 
+註冊樹莓派
+
+```json
+POST /api/v1/rasp/register-rasp
+{
+  "cord_x": 0,
+  "cord_y": 0,
+  "facing": "SOUTH"
+}
+
+RESPONSE
+{
+  "Successfully registered Rasp 'rasp1"
+}
+```
+
+
+註冊裝置
+
+```json
+POST /api/v1/rasp/register-device
+{
+  "battery": 57,
+  "cord_x": 0,
+  "cord_y": 0,
+  "rasp_id": "rasp1"
+}
+
+RESPONSE
+{
+  "Successfully registered Device 'device1"
+}
+```
+
+更新裝置電量
+
+```json
+POST /api/v1/rasp/udpate-device-battery
+{
+  "battery": 100,
+  "device_id": "device1"
+}
+
+RESPONSE
+{
+  "Successfully update the battery of device1"
+}
+```
+
 ## MQTT 訊息
 
 訂閱示例，rasp/rasp2 可換成想訂閱的樹莓派 id：
