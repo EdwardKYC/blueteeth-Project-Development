@@ -4,8 +4,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from src.dependencies import get_db, get_current_user
-from src.users.schemas import UserAuthSchema
-from src.users.models import User
+from src.users.schemas import UserAuthSchema, UserSchema
+from src.users.models import User, UserBookLink, UserDeviceLink, UserRaspLink
 from src.users.config import user_config
 from src.history.service import HistoryService
 from src.websockets.service import WebSocketMessageHandler
@@ -124,3 +124,37 @@ def get_all_users(db: Session = Depends(get_db)):
         }
         for user in users
     ]
+
+@router.delete("/delete-user")
+async def delete_user(
+    user_data: UserSchema,
+    db: Session = Depends(get_db)
+):
+    """
+    Deletes a user and their associated records from the database.
+
+    :param user_data: UserSchema containing the username of the user to delete.
+    :param db: Database session dependency.
+    :return: A message confirming the deletion.
+    """
+    user = db.query(User).filter(User.username == user_data.username).first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    try:
+        db.query(UserBookLink).filter(UserBookLink.user_id == user.id).delete()
+        db.query(UserDeviceLink).filter(UserDeviceLink.user_id == user.id).delete()
+        db.query(UserRaspLink).filter(UserRaspLink.user_id == user.id).delete()
+        
+        db.delete(user)
+        db.commit()
+        
+        await websocket_message_handler.remove_user(user.username)
+        await history.log_info(db=db, action="Delete user", details=f"User {user.username} (ID: {user.id}) has been deleted.")    
+
+        return {"message": "User deleted successfully."}
+    except Exception as e:
+        db.rollback()
+        await history.log_error(db=db, action="Delete user", details=f"Unexpected error during deletion. error: {e}")
+        raise HTTPException(status_code=500, detail="An unexpected error occurred during deletion.")

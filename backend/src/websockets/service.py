@@ -131,3 +131,12 @@ class WebSocketMessageHandler(metaclass=SingletonMeta):
             }
         }
         await self.manager.send_message(message)
+
+    async def remove_user(self, username: str):
+        message = {
+            "type": "remove_user",
+            "payload" : {
+                "username": username
+            }
+        }
+        await self.manager.send_message(message)

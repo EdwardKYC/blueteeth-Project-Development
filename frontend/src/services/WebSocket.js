@@ -9,7 +9,8 @@ import {
 	handleRegisterDevice,
 	handleRegisterRasp,
 	handleRegisterUser,
-	handleUpdateDeviceBattery
+	handleUpdateDeviceBattery,
+	handleRemoveUser
 } from "./helper";
 import { WS_URL } from '../config';
 
@@ -64,5 +65,7 @@ const handleWebSocketMessage = (message) => {
 		handleRegisterRasp(message.payload);
 	} else if (message.type === "register_user") {
 		handleRegisterUser(message.payload);
+	} else if (message.type === "remove_user") {
+		handleRemoveUser(message.payload);
 	}
 };

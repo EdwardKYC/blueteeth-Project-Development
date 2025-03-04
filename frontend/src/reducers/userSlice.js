@@ -57,10 +57,16 @@ const userSlice = createSlice({
         user.book = null;
       }
     },
+    removeUser(state, action) {
+      const { userName } = action.payload;
+      if (state.byName[userName]) {
+        delete state.byName[userName];
+      }
+    },
   },
 });
 
-export const { insertUser, addBookToUser, addDeviceToUser, addRaspToUser, clearUserNavigation } =
+export const { insertUser, addBookToUser, addDeviceToUser, addRaspToUser, clearUserNavigation, removeUser } =
   userSlice.actions;
 
 export default userSlice.reducer;

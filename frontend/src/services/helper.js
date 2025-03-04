@@ -17,7 +17,8 @@ import {
     addBookToUser,
     addDeviceToUser,
     addRaspToUser,
-    clearUserNavigation
+    clearUserNavigation,
+	removeUser
 } from "../reducers/userSlice";
 import {
     insertBook,
@@ -155,4 +156,29 @@ export const handleUpdateDeviceBattery = ({ device_id, battery }) => {
 	}
 
 	store.dispatch(updateDeviceBattery({ deviceId: device_id, battery }));
+};
+
+export const handleRemoveUser = ({ username }) => {
+    const state = store.getState();
+    const user = state.users.byName[username];
+
+    if (!user) return;
+
+    const deviceId = user.device?.id;
+    const bookId = user.book?.id;
+    const rasps = user.rasps || [];
+
+    store.dispatch(removeUser({ userName: username }));
+
+    if (bookId) {
+        store.dispatch(removeUserFromBook({ bookId, userName: username }));
+    }
+
+    if (deviceId) {
+        store.dispatch(removeUserFromDevice({ deviceId, userName: username }));
+    }
+
+    rasps.forEach(({ id }) => {
+        store.dispatch(removeUserFromRasp({ raspId: id, userName: username }));
+    });
 };
