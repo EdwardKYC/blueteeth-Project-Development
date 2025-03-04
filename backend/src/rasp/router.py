@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from src.dependencies import get_db
+from src.users.models import UserRaspLink, UserDeviceLink
 from src.rasp.models import Rasp, Device
 from src.rasp.constants import CardinalDirection
 from src.history.service import HistoryService
@@ -172,6 +173,12 @@ async def delete_device(device_id: str, db: Session = Depends(get_db)):
     """
     Delete a device by its ID.
     """
+    existing_link = db.query(UserDeviceLink).filter(UserDeviceLink.device_id == device_id).first()
+    if existing_link:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Device '{device_id}' is currently linked to a user. Please cancel existing navigation before deleting."
+        )
     device = db.query(Device).filter(Device.id == device_id).first()
 
     if not device:
@@ -181,3 +188,25 @@ async def delete_device(device_id: str, db: Session = Depends(get_db)):
     db.commit()
 
     return {"detail": f"Device '{device_id}' successfully deleted"}
+
+@router.delete("/delete-rasp/{rasp_id}")
+async def delete_rasp(rasp_id: str, db: Session = Depends(get_db)):
+    """
+    Delete a rasp by its ID.
+    """
+    existing_link = db.query(UserRaspLink).filter(UserRaspLink.rasp_id == rasp_id).first()
+    if existing_link:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Rasp '{rasp_id}' is currently linked to a user. Please cancel existing navigation before deleting."
+        )
+
+    rasp = db.query(Rasp).filter(Rasp.id == rasp_id).first()
+    
+    if not rasp:
+        raise HTTPException(status_code=404, detail=f"Rasp with ID '{rasp_id}' not found")
+
+    db.delete(rasp)
+    db.commit()
+
+    return {"detail": f"Rasp '{rasp_id}' successfully deleted"}
