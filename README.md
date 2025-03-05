@@ -179,7 +179,7 @@ RESPONSE
 取消導航
 
 ```json
-GET /api/v1/books/cancel-navigation
+POST /api/v1/books/cancel-navigation
 
 RESPONSE
 {
