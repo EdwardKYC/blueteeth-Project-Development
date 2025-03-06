@@ -1,5 +1,6 @@
 import asyncio
 from bleak import BleakClient
+from cloud_receive import send_message_to_mqtt
 print(BleakClient)
 BT_UUID_CUSTOM_SERVICE = "0c71e180-65d9-4497-8ca4-a65d86d5003b"
 BT_UUID_CUSTOM_CHAR = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
@@ -36,3 +37,12 @@ async def list_services(client):
                 print(f"{char.uuid} 可以寫入！")
             else:
                 print(f"{char.uuid} 可能無法寫入！")
+
+def notification_handler(sender, data):
+    try:
+        decoded = data.decode('utf-8')
+    except Exception as e:
+        decoded = str(data)
+    print(f"收到來自 {sender} 的通知: {decoded}")
+    send_message_to_mqtt(decoded)
+

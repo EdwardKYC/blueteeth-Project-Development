@@ -2,6 +2,8 @@ import asyncio
 from bleak import BleakScanner, BleakClient
 from nrf_command import send_message_to_ble_device , list_services , notification_handler
 
+NOTIFY_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+
 def load_target_names(filename="bluelist.txt"):
     try:
         with open(filename, "r", encoding="utf-8") as file:
@@ -16,9 +18,12 @@ async def connect_and_listen(device):
         try:
             async with BleakClient(device.address) as client:
                 print(f"已成功連線到 {device.name} ({device.address})")
-                await send_message_to_ble_device(client, "change color")
 
+                await send_message_to_ble_device(client, "change color")
                 print(f"訊息已發送: change color")
+
+                await client.start_notify(NOTIFY_UUID, notification_handler)
+                print("已啟用通知功能，等待資料...")
                 
                 #await list_services(client)
                 while True:

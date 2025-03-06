@@ -4,7 +4,7 @@ import time
 import threading
 import tkinter as tk
 from config import connected_devices
-from cloud_command import cancel_device_navigation , add_device_color
+from cloud_command import cancel_device_navigation , add_device_color 
 
 BROKER_ADDRESS = "test.mosquitto.org"
 PORT = 1883
@@ -96,6 +96,8 @@ def handle_command(category, payload):
         print(f"為裝置 {device_id} 新增顏色: {color}")
         add_device_color(device_id, color)
 
+
+
 def on_disconnect(client, userdata, rc):
     print(f"[Warning] 與 MQTT Broker 的連線斷開，等待 60 秒後嘗試重新連線...")
     try:
@@ -111,8 +113,12 @@ def on_connect(client, userdata, flags, rc):
     else:
         print(f"[Error] 連線失敗，返回碼: {rc}")
 
+mqtt_client = None
+
 def mqtt_loop():
+    global mqtt_client
     client = mqtt.Client()
+    mqtt_client = client
     client.on_message = on_message
     client.on_disconnect = on_disconnect
     client.on_connect = on_connect
@@ -122,6 +128,14 @@ def mqtt_loop():
         client.loop_forever() 
     except Exception as e:
         print(f"[Error] 连接MQTT Broker失败: {e}")
+
+def send_message_to_mqtt(message: str):
+    global mqtt_client
+    if mqtt_client:
+        mqtt_client.publish(TOPIC, message)
+        print("已發佈訊息至 MQTT:", message)
+    else:
+        print("MQTT client 尚未連線，無法發佈訊息。")
 
 mqtt_thread = threading.Thread(target=mqtt_loop, daemon=True)
 mqtt_thread.start()
