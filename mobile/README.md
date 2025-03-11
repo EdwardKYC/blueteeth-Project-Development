@@ -2,6 +2,7 @@
 
 ## 架構
 
+```plaintext
 mobile/  
 │── .dart_tool/  
 │── .idea/  
@@ -34,6 +35,3 @@ mobile/
 │── pubspec.lock  
 │── pubspec.yaml  # Flutter 專案設定
 └── README.md  
-
-
-
