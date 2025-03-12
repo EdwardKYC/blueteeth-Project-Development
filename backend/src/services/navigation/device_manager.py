@@ -18,6 +18,11 @@ class DeviceManager:
         book = self.db.query(Book).filter(Book.id == book_id).first()
         if not book:
             raise ValueError(f"Book with id {book_id} not found")
+        
+        if book.device_id:
+            device = self.db.query(Device).filter(Device.id == book.device_id).first()
+            if not device:
+                raise ValueError(f"Book {book_id} is associated with Device {book.device_id}, but the device is missing")
         return book
 
     def assign_device_color(self, book: Book) -> Tuple[Device, str]:
