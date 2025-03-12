@@ -194,7 +194,8 @@ POST /api/v1/rasp/register-rasp
 {
   "cord_x": 0,
   "cord_y": 0,
-  "facing": "SOUTH"
+  "facing": "SOUTH",
+  "rasp_id": "rasp1"
 }
 
 RESPONSE
@@ -212,7 +213,8 @@ POST /api/v1/rasp/register-device
   "battery": 57,
   "cord_x": 0,
   "cord_y": 0,
-  "rasp_id": "rasp1"
+  "rasp_id": "rasp1",
+  "device_id": "device1"
 }
 
 RESPONSE
