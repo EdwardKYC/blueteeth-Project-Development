@@ -223,20 +223,6 @@ RESPONSE
 }
 ```
 
-更新裝置電量
-
-```json
-POST /api/v1/rasp/udpate-device-battery
-{
-  "battery": 100,
-  "device_id": "device1"
-}
-
-RESPONSE
-{
-  "Successfully update the battery of device1"
-}
-```
 
 ## MQTT 訊息
 
