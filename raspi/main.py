@@ -1,98 +1,93 @@
-import asyncio , json , time , requests , os
+import asyncio
+import json
 import paho.mqtt.client as mqtt
-from bleak import BleakClient , BleakScanner
-from datetime import datetime
-from config import connected_devices , Device
-BROKER_ADDRESS = "test.mosquitto.org"
-PORT = 1883
-TOPIC = "register"
+from bleak import BleakClient, BleakScanner
+from cloud_receive import send_nrf_message , send_rasp_message
+
+
+# 設定 MQTT Broker
+BROKER_ADDRESS = "0.tcp.jp.ngrok.io"
+PORT = 11067
 DEVICE = "rasp1"
+TOPIC = "rasp/" + DEVICE 
+NOTIFY_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+
+
+# 設定 MQTT 客戶端，並加入錯誤處理
 mqtt_client = mqtt.Client()
-mqtt_client.connect(BROKER_ADDRESS, PORT, 60)
 
+def connect_mqtt():
+    """嘗試連接 MQTT Broker，並加入重試機制"""
+    while True:
+        try:
+            mqtt_client.connect(BROKER_ADDRESS, PORT, 60)
+            print("[Info] 成功連線到 MQTT Broker")
+            return
+        except Exception as e:
+            print(f"[Error] 連線 MQTT 失敗: {e}")
+            print("5 秒後重新嘗試...")
+            asyncio.sleep(5)
 
-# 讀取 bluelist.txt 並將 MAC 地址存入列表
-def load_device_addresses(file_path="bluelist.txt"):
+connect_mqtt()
+
+# 延遲載入，避免循環導入
+from nrf_command import send_message_to_ble_device, list_services, notification_handler
+
+def load_target_names(filename="bluelist.txt"):
+    """讀取目標藍牙裝置名稱"""
     try:
-        with open(file_path, "r", encoding="utf-8") as file:
-            addresses = [line.strip() for line in file.readlines() if line.strip()]
-            return addresses
+        with open(filename, "r", encoding="utf-8") as file:
+            return [line.strip() for line in file.readlines() if line.strip()]
     except FileNotFoundError:
-        print(f"[ERROR] 文件 {file_path} 不存在！")
+        print(f"[Error] 檔案 {filename} 未找到，請確保該檔案存在！")
         return []
 
-def send_mqtt_message(device):
-    """
-    發送 MQTT 訊息，包含裝置名稱和 MAC 地址
-    :param device: Device 類實例
-    """
-    message = json.dumps({"device_name": device.name, "connected_mac": device.mac})
-    mqtt_client.publish(TOPIC, message)
-    print(f"[MQTT] 已發送訊息: {message}")
-
-# 嘗試連接到所有藍牙裝置，並檢查 MAC 地址
-async def connect_to_device(address, name, valid_addresses):    
-    """
-    連接藍牙裝置
-    :param address: 藍牙裝置 MAC 地址
-    :param name: 藍牙裝置名稱
-    :param valid_addresses: 允許的 MAC 地址列表
-    """
-    if address.upper() in connected_devices:
-        print(f"[INFO] 裝置 {address} 已連線，跳過重新連線。")
-        return
-
-    if address.upper() not in [addr.upper() for addr in valid_addresses]:
-        print(f"[INFO] 裝置 {address} 不在允許的 MAC 地址列表中，跳過連接。")
-        return
-
-    try:
-        async with BleakClient(address) as client:
-            if client.is_connected:
-                print(f"[INFO] 已成功連接到裝置 {address}")
-                # 創建 Device 實例並加入字典
-                device = Device(name=name if name else "Unknown", mac=address)
-                connected_devices[address.upper()] = device
-                send_mqtt_message(device)
-            else:
-                print(f"[ERROR] 無法連接到裝置 {address}")
-    except Exception as e:
-        print(f"[ERROR] 連接到裝置 {name} 時發生錯誤: {e}")
-
-# 掃描藍牙裝置並嘗試連接所有裝置
-async def scan_and_connect():
-    # 加載 MAC 地址列表
-    valid_addresses = load_device_addresses()
-    print(f"[DEBUG] 加載的允許 MAC 地址列表: {valid_addresses}")
-    if not valid_addresses:
-        print("[INFO] MAC 地址列表為空，結束掃描。")
-        return
-
+async def connect_and_listen(device):
+    """與 BLE 裝置連線並保持連線"""
     while True:
-        print("開始掃描藍牙裝置...")
-        devices = await BleakScanner.discover()
-        if devices:
-            print("[INFO] 掃描到的裝置:")
-            for device in devices:
-                print(f"名稱: {device.name if device.name else 'Unknown'}, MAC: {device.address}")
+        try:
+            async with BleakClient(device.address) as client:
+                print(f"✅ 已成功連線到 {device.name} ({device.address})")
 
-            # 比對掃描到的裝置是否在允許的列表中
-            print("[INFO] 開始比對掃描到的裝置...")
-            for device in devices:
-                if device.address.upper() in [addr.upper() for addr in valid_addresses]:
-                    print(f"[MATCH] 裝置 {device.address} 在允許列表中，檢查連線狀態...")
-                    await connect_to_device(device.address, device.name, valid_addresses)
-                else:
-                    print(f"[NO MATCH] 裝置 {device.address} 不在允許列表中，跳過。")
+                await send_message_to_ble_device(client, "change color")
+                print(f"📩 訊息已發送: change color")
+
+                await client.start_notify(NOTIFY_UUID, notification_handler)
+                print("🔔 已啟用通知功能，等待資料...")
+
+                while True:
+                    await asyncio.sleep(10)
+
+        except Exception as e:
+            print(f"[Error] {device.name} 連線中斷: {e}")
+            print("2 秒後重新嘗試連線...")
+            await asyncio.sleep(2)
+
+async def scan_and_connect():
+    """掃描藍牙裝置並嘗試連接"""
+    target_names = load_target_names()
+    send_rasp_message(DEVICE)
+    while True:
+        print("🔍 開始 BLE 掃描 (5 秒)...")
+        devices = await BleakScanner.discover(timeout=5.0)
+
+        target_devices = [d for d in devices if d.name in target_names]
+
+        if target_devices:
+            print("🎯 找到目標裝置：")
+            for d in target_devices:
+                print(f"   - {d.name} ({d.address})")
+
+            await asyncio.gather(*(connect_and_listen(d) for d in target_devices))
         else:
-            print("[INFO] 未掃描到任何裝置。")
-        print("掃描結束，等待 5 秒後重新掃描...")
-        print("")
+            print("⚠️ 未掃描到目標裝置，5 秒後重試...")
+        
         await asyncio.sleep(5)
 
-# 主程式入口
+
+
 if __name__ == "__main__":
     try:
         asyncio.run(scan_and_connect())
     except KeyboardInterrupt:
-        print("程序終止。")
+        print("❌ 程序終止。")

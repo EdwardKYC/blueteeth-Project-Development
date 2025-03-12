@@ -1,8 +1,8 @@
-from nrf_command import send_message_to_ble_device
+
 from config import connected_devices
 
 def cancel_device_navigation(device_id , color):
-
+    from nrf_command import send_message_to_ble_device
     device = next((dev for dev in connected_devices.values() if dev.name == device_id), None)
     if device:
         mac_address = device.mac
@@ -13,6 +13,7 @@ def cancel_device_navigation(device_id , color):
         print(f"[ERROR] 裝置名稱 {device_id} 不存在於 connected_devices 中。")
 
 def add_device_color(device_id , color):
+    
     device = next((dev for dev in connected_devices.values() if dev.name == device_id), None)
     if device:
         mac_address = device.mac

@@ -1,13 +1,10 @@
 import asyncio
 from bleak import BleakClient
-from cloud_receive import send_message_to_mqtt
+from cloud_receive import send_nrf_message
 print(BleakClient)
 BT_UUID_CUSTOM_SERVICE = "0c71e180-65d9-4497-8ca4-a65d86d5003b"
 BT_UUID_CUSTOM_CHAR = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
 NOTIFY_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
-
-def notification_handler(sender, data):
-    print(f"收到來自 {sender} 的通知: {data}")
 
 async def send_message_to_ble_device(client, message):
     try:
@@ -44,5 +41,5 @@ def notification_handler(sender, data):
     except Exception as e:
         decoded = str(data)
     print(f"收到來自 {sender} 的通知: {decoded}")
-    send_message_to_mqtt(decoded)
+    send_nrf_message(decoded)
 
