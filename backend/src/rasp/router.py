@@ -25,6 +25,7 @@ async def register_rasp(
     facing = params.facing
     cord_x = params.cord_x
     cord_y = params.cord_y
+    rasp_id = params.rasp_id
 
     if facing.upper() not in CardinalDirection.__members__:
         await history.log_warning(
@@ -37,9 +38,15 @@ async def register_rasp(
             detail=f"Invalid facing value '{facing}'. Must be one of {', '.join(CardinalDirection.__members__.keys())}"
         )
     validated_facing = CardinalDirection[facing.upper()] 
-    
-    rasp_count = db.query(Rasp).count()
-    rasp_id = f"rasp{rasp_count + 1}"
+
+    rasp = db.query(Rasp).filter(Rasp.id == rasp_id).first()
+    if not rasp:
+        await history.log_warning(
+            db=db,
+            action="Register Device",
+            details=f"Attempt to register a device under a non-existent Rasp ID '{rasp_id}'"
+        )
+        raise HTTPException(status_code=404, detail=f"Rasp with ID '{rasp_id}' not found")
 
     new_rasp = Rasp(
         id=rasp_id,
@@ -69,6 +76,7 @@ async def register_device(
     battery = params.battery
     cord_x = params.cord_x
     cord_y = params.cord_y
+    new_device_id = params.device_id
 
     rasp = db.query(Rasp).filter(Rasp.id == rasp_id).first()
     if not rasp:
@@ -78,9 +86,16 @@ async def register_device(
             details=f"Attempt to register a device under a non-existent Rasp ID '{rasp_id}'"
         )
         raise HTTPException(status_code=404, detail=f"Rasp with ID '{rasp_id}' not found")
+    
+    device = db.query(Device).filter(Device.id == new_device_id).first()
+    if not device:
+        await history.log_warning(
+            db=db,
+            action="Register Device",
+            details=f"Attempt to register a device under a non-existent Device ID '{new_device_id}'"
+        )
+        raise HTTPException(status_code=404, detail=f"Device with ID '{new_device_id}' not found")
 
-    device_count = db.query(Device).count()
-    new_device_id = f"device{device_count + 1}"
 
     new_device = Device(
         id=new_device_id,
