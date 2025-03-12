@@ -40,13 +40,13 @@ async def register_rasp(
     validated_facing = CardinalDirection[facing.upper()] 
 
     rasp = db.query(Rasp).filter(Rasp.id == rasp_id).first()
-    if not rasp:
+    if rasp:
         await history.log_warning(
             db=db,
-            action="Register Device",
-            details=f"Attempt to register a device under a non-existent Rasp ID '{rasp_id}'"
+            action="Register Rasp",
+            details=f"Already exist Rasp ID '{rasp_id}'"
         )
-        raise HTTPException(status_code=404, detail=f"Rasp with ID '{rasp_id}' not found")
+        raise HTTPException(status_code=400, detail=f"Rasp with ID '{rasp_id}' already exist")
 
     new_rasp = Rasp(
         id=rasp_id,
@@ -88,34 +88,39 @@ async def register_device(
         raise HTTPException(status_code=404, detail=f"Rasp with ID '{rasp_id}' not found")
     
     device = db.query(Device).filter(Device.id == new_device_id).first()
-    if not device:
-        await history.log_warning(
+    if device:
+        device.battery = battery
+        db.commit()
+        db.refresh(device)
+
+        await history.log_info(
+            db=db,
+            action="Update Device Battery",
+            details=f"Device '{new_device_id}' battery updated to {battery}%",
+        )
+        await websocket_handler.update_device_battery(device_id=new_device_id, battery=battery)
+
+        return f"Successfully update the battery of {new_device_id}"
+    else:
+        new_device = Device(
+            id=new_device_id,
+            battery=battery,
+            cord_x=cord_x,
+            cord_y=cord_y,
+            rasp_id=rasp_id,
+        )
+        db.add(new_device)
+        db.commit()
+        db.refresh(new_device)
+
+        await history.log_info(
             db=db,
             action="Register Device",
-            details=f"Attempt to register a device under a non-existent Device ID '{new_device_id}'"
+            details=f"Device {new_device.id} registered at coordinates ({cord_x}, {cord_y}) with battery {battery}% under Rasp '{rasp_id}'",
         )
-        raise HTTPException(status_code=404, detail=f"Device with ID '{new_device_id}' not found")
+        await websocket_handler.register_device(device=new_device)
 
-
-    new_device = Device(
-        id=new_device_id,
-        battery=battery,
-        cord_x=cord_x,
-        cord_y=cord_y,
-        rasp_id=rasp_id,
-    )
-    db.add(new_device)
-    db.commit()
-    db.refresh(new_device)
-
-    await history.log_info(
-        db=db,
-        action="Register Device",
-        details=f"Device {new_device.id} registered at coordinates ({cord_x}, {cord_y}) with battery {battery}% under Rasp '{rasp_id}'",
-    )
-    await websocket_handler.register_device(device=new_device)
-
-    return f"Successfully registered Device '{new_device.id}"
+        return f"Successfully registered Device '{new_device.id}"
   
 
 @router.post("/update-device-battery")

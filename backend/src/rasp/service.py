@@ -13,8 +13,8 @@ def toggle_user_rasp(user: User, db: Session, rasp_id: str = None, color: str = 
     if not rasp_id:
         rasp_links = db.query(UserRaspLink).filter(UserRaspLink.user_id == user.id).all()
         if not rasp_links:
-            raise ResourceAlreadyDeletedException()
-
+            return
+        
         for link in rasp_links:
             mqtt_message_handler.cancel_rasp_navigation(rasp_id=link.rasp_id, user_name=user.username)
             db.delete(link)

@@ -54,6 +54,8 @@ class DirectionCalculator:
         for i in range(len(path) - 1):
             current = path[i]
             next_node = path[i + 1]
+            if current.x == next_node.x and current.y == next_node.y:
+                continue
             direction = self._calculate_direction(current, next_node)
             directions.append((current.node_id, direction))
         return directions

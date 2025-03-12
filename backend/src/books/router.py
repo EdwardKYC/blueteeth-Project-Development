@@ -86,6 +86,53 @@ async def register_book(
     await history.log_info(db=db, action="Register Book", details=f"Book '{name}' successfully registered on device ID: {device_id}")
     return new_book.to_dict()
 
+@router.delete("/delete-book/{book_id}")
+async def delete_book(
+    book_id: int,
+    db: Session = Depends(get_db),
+):
+    """
+    刪除指定 ID 的書籍。
+    """
+    book = db.query(Book).filter(Book.id == book_id).first()
+
+    if not book:
+        await history.log_warning(
+            db=db, action="Delete Book",
+            details=f"Delete a non-existent book ID '{book_id}'"
+        )
+        raise HTTPException(status_code=404, detail=f"Book with ID {book_id} not found")
+
+    try:
+        if book.device:
+            book.device_id = None
+
+        db.delete(book)
+        db.commit()
+
+        await history.log_info(
+            db=db, action="Delete Book",
+            details=f"Book '{book.name}' (ID: {book_id}) deleted"
+        )
+
+        return {"message": f"Book '{book.name}' successfully deleted"}
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        await history.log_error(
+            db=db, action="Delete Book",
+            details=f"Database error while deleting book '{book_id}': {str(e)}"
+        )
+        raise HTTPException(status_code=500, detail="Failed to delete book due to database error.")
+
+    except Exception as e:
+        db.rollback()
+        await history.log_error(
+            db=db, action="Delete Book",
+            details=f"Unexpected error while deleting book '{book_id}': {str(e)}"
+        )
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while deleting the book.")
+
 @router.get("/get-all-books", response_model=List[dict])
 def get_all_books(db: Session = Depends(get_db)):
     books = db.query(Book).all()

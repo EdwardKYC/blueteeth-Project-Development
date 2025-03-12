@@ -17,6 +17,7 @@ class Navigator:
 
         # 查詢書籍
         book = device_manager.get_book_by_id(book_id)
+        print(f"書本: {book.cord_x, book.cord_y}")
 
         # 找到起始位置和最近的 Rasp
         start_node = map.find_closest_node(0, 0)
