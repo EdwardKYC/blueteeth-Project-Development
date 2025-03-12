@@ -2,15 +2,15 @@ import paho.mqtt.client as mqtt
 import json
 import time
 import threading
-import tkinter as tk
-from config import connected_devices
+# import tkinter as tk
+import requests
 from cloud_command import cancel_device_navigation , add_device_color 
 
 BROKER_ADDRESS = "test.mosquitto.org"
 PORT = 1883
 DEVICE = "rasp1"
 TOPIC = DEVICE + "/commands"
-
+API_URL = "https://ece4-140-116-118-29.ngrok-free.app"
 COMMAND_CATEGORIES = {
     "cancel_rasp_navigation": "cancel_rasp_navigation",
     "cancel_device_navigation": "cancel_device_navigation",
@@ -21,20 +21,20 @@ COMMAND_CATEGORIES = {
 users = []
 current_label = None
 
-root = tk.Tk()
-root.title("Direction Display App")
-root.configure(bg="white")
-root.state('zoomed')  
+# root = tk.Tk()
+# root.title("Direction Display App")
+# root.configure(bg="white")
+# root.state('zoomed')  
 
-def resize_font(event=None):
-    window_width = root.winfo_width()
-    window_height = root.winfo_height()
-    font_size = int(min(window_width, window_height) // 10)
-    for label in users:
-        label.config(font=("Helvetica", font_size))
+# def resize_font(event=None):
+#     window_width = root.winfo_width()
+#     window_height = root.winfo_height()
+#     font_size = int(min(window_width, window_height) // 10)
+#     for label in users:
+#         label.config(font=("Helvetica", font_size))
 
-root.bind('<Configure>', resize_font) 
-root.configure(bg="white")
+# root.bind('<Configure>', resize_font) 
+# root.configure(bg="white")
 
 def cancel_rasp_navigation(username):
     global users
@@ -44,26 +44,26 @@ def cancel_rasp_navigation(username):
             users.remove(label)
             break
 
-def add_rasp_direction(username, direction):
-    global users
-    user_info = f"{username}: {direction}\n"
-    label = tk.Label(root, text=user_info, bg="white", font=("Helvetica", 14))
-    label.pack(pady=10, anchor="center", expand=True)
-    users.append(label)
+# def add_rasp_direction(username, direction):
+#     global users
+#     user_info = f"{username}: {direction}\n"
+#     label = tk.Label(root, text=user_info, bg="white", font=("Helvetica", 14))
+#     label.pack(pady=10, anchor="center", expand=True)
+#     users.append(label)
 
-def cycle_users():
-    global users, current_label
-    if users:
-        if current_label:
-            current_label.pack_forget()
+# def cycle_users():
+#     global users, current_label
+#     if users:
+#         if current_label:
+#             current_label.pack_forget()
 
-        current_label = users[0]
-        current_label.pack(pady=10, anchor="center", expand=True)
-        users.append(users.pop(0))
+#         current_label = users[0]
+#         current_label.pack(pady=10, anchor="center", expand=True)
+#         users.append(users.pop(0))
     
-    root.after(2000, cycle_users)
+#     root.after(2000, cycle_users)
 
-root.after(2000, cycle_users)
+# root.after(2000, cycle_users)
 
 def on_message(client, userdata, message):
     try:
@@ -88,7 +88,7 @@ def handle_command(category, payload):
         direction = payload.get("direction")
         user_name = payload.get("userName")
         print(f"為 {user_name} 新增 Raspberry Pi 導航方向指令: {direction}")
-        add_rasp_direction(user_name, direction)
+        # add_rasp_direction(user_name, direction)
 
     elif category == "add_device_color":
         device_id = payload.get("deviceId")
@@ -137,7 +137,60 @@ def send_message_to_mqtt(message: str):
     else:
         print("MQTT client 尚未連線，無法發佈訊息。")
 
+def send_nrf_message(message_str):
+    """透過 REST API 發送裝置資訊"""
+    try:
+
+        battery, cord_x, cord_y, id= map(int, message_str.split(","))
+        device_id = "nrf52840_" + str(id)
+        url = API_URL + "/api/v1/rasp/register-device"
+        payload = {
+            "battery": battery,
+            "cord_x": cord_x,
+            "cord_y": cord_y,
+            "rasp_id": "rasp1",
+            "device_id": device_id
+        }
+        headers = {"Content-Type": "application/json"}
+
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code == 200:
+            print(f"[REST API] 訊息成功發送: {payload}")
+        else:
+            print(f"[REST API] 伺服器回應錯誤: {response.status_code}, {response.text}")
+    
+    except ValueError:
+        print(f"[Error] 無法解析訊息: {message_str}")
+    except Exception as e:
+        print(f"[Error] 傳送 REST API 失敗: {e}")
+        
+def send_rasp_message(message_str):
+    try:
+
+        battery, cord_x, cord_y, id= map(int, message_str.split(","))
+        device_id = "nrf52840_" + str(id)
+        url = API_URL + "/api/v1/rasp/register-rasp"
+        payload = {
+            "cord_x": cord_x,
+            "cord_y": cord_y,
+            "rasp_id": "rasp1",
+
+        }
+        headers = {"Content-Type": "application/json"}
+
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code == 200:
+            print(f"[REST API] 訊息成功發送: {payload}")
+        else:
+            print(f"[REST API] 伺服器回應錯誤: {response.status_code}, {response.text}")
+    
+    except ValueError:
+        print(f"[Error] 無法解析訊息: {message_str}")
+    except Exception as e:
+        print(f"[Error] 傳送 REST API 失敗: {e}")
+
+
 mqtt_thread = threading.Thread(target=mqtt_loop, daemon=True)
 mqtt_thread.start()
 
-root.mainloop()
+# root.mainloop()
