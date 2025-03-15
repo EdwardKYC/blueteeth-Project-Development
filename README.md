@@ -186,12 +186,3 @@ mosquitto_sub -h localhost -p 1883 -t "rasp/rasp2"
 
 {"action": "add_device_color", "userName": "yozen0405", "color": "#038fc2", "deviceId": "device3"}
 ```
-
-### 樹莓派發送給雲端MQTT
-
-主要的作用是讓雲端能即時同步樹莓派的狀態，主題為 `rasp/heartbeat`
-
-```bash
-mosquitto_pub -h localhost -p 1883 -t "rasp/heartbeat" -m '{"rasp_id": "rasp1"}'
-```
-
