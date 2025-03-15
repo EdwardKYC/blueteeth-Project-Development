@@ -20,7 +20,7 @@
 
 ### 實時更新
 
-![Image](https://github.com/user-attachments/assets/706f21a6-c755-463b-948f-2516799a503b)
+![Image](https://github.com/user-attachments/assets/d1bb935d-8451-49b7-85e3-f718d01bd59c)
 
 ## API 端點示例
 
