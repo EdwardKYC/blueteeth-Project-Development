@@ -4,6 +4,10 @@
 
 本專案結合手機 App 與圖書館內的樹莓派屏幕，透過 BLE 導航技術，協助讀者快速定位書籍，提升檢索效率與使用體驗。
 
+## 實際場景
+
+![Image](https://github.com/user-attachments/assets/7c4e54ff-cc5e-4f61-9699-a41fd9805952)
+
 ## 架構圖
 
 ### 前期部署
