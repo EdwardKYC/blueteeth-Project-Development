@@ -10,7 +10,7 @@ from src.websockets import WebSocketMessageHandler
 history = HistoryService()
 websocket_handler = WebSocketMessageHandler()
 
-async def check_alive_status(db: Session = Depends(get_db)):
+async def check_alive_status():
     while True:
         await asyncio.sleep(30)  
         # print("檢查裝態")
@@ -54,12 +54,3 @@ async def check_alive_status(db: Session = Depends(get_db)):
             print(f"檢查狀態時出錯: {e}")
         finally:
             db_session.close() 
-
-_main_loop = None
-
-def set_main_loop(loop: asyncio.AbstractEventLoop):
-    global _main_loop
-    _main_loop = loop
-
-def get_main_loop() -> asyncio.AbstractEventLoop:
-    return _main_loop

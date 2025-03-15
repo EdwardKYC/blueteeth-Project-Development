@@ -42,12 +42,18 @@ async def register_rasp(
 
     rasp = db.query(Rasp).filter(Rasp.id == rasp_id).first()
     if rasp:
-        await history.log_warning(
-            db=db,
-            action="Register Rasp",
-            details=f"Already exist Rasp ID '{rasp_id}'"
-        )
-        raise HTTPException(status_code=400, detail=f"Rasp with ID '{rasp_id}' already exist")
+        rasp.last_update = datetime.utcnow()
+        if rasp.status == "offline":
+            rasp.status = "online"
+            await history.log_info(
+                db=db,
+                action="Update Rasp Status",
+                details=f"{rasp_id} back to online"
+            )
+            await websocket_handler.toggle_rasp_status(id=rasp.id, status="online")
+            db.commit()
+            db.refresh(rasp)
+        return f"Successfully update the status of {rasp.id}"
 
     new_rasp = Rasp(
         id=rasp_id,
@@ -93,26 +99,38 @@ async def register_device(
         rasp.last_update = datetime.utcnow()
         if rasp.status == "offline":
             rasp.status = "online"
+            await history.log_info(
+                db=db,
+                action="Update Rasp Status",
+                details=f"{rasp.id} back to online"
+            )
             await websocket_handler.toggle_rasp_status(rasp.id, "online")
         db.commit()
         db.refresh(rasp)
     
     device = db.query(Device).filter(Device.id == new_device_id).first()
     if device:
-        device.battery = battery
         device.last_update = datetime.utcnow()
         if device.status == "offline":
             device.status = "online"
+            await history.log_info(
+                db=db,
+                action="Update Device Status",
+                details=f"{device.id} back to online"
+            )
             await websocket_handler.toggle_device_status(device.id, "online")
+
+        if device.battery != battery:
+            device.battery = battery
+            await history.log_info(
+                db=db,
+                action="Update Device Battery",
+                details=f"Device '{new_device_id}' battery updated to {battery}%",
+            )
+            await websocket_handler.update_device_battery(device_id=new_device_id, battery=battery)
+
         db.commit()
         db.refresh(device)
-
-        await history.log_info(
-            db=db,
-            action="Update Device Battery",
-            details=f"Device '{new_device_id}' battery updated to {battery}%",
-        )
-        await websocket_handler.update_device_battery(device_id=new_device_id, battery=battery)
 
         return f"Successfully update the battery of {new_device_id}"
     else:
