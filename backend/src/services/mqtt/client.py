@@ -60,3 +60,8 @@ class MQTTClient(metaclass=SingletonMeta):
             print(f"發布失敗，原因 {e}")
             self.reconnect()
             self.client.publish(topic, json.dumps(payload))
+
+    def subscribe(self, topic: str, callback):
+        """訂閱 MQTT 主題"""
+        self.client.subscribe(topic)
+        self.client.message_callback_add(topic, callback)

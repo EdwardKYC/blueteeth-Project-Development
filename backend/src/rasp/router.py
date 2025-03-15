@@ -7,6 +7,7 @@ from src.rasp.constants import CardinalDirection
 from src.history.service import HistoryService
 from src.websockets import WebSocketMessageHandler
 from .schemas import RegisterRaspSchema, RegisterDeviceSchema, UpdateDeviceBatterySchema
+from datetime import datetime
 
 router = APIRouter(
     prefix="/rasp",
@@ -53,6 +54,8 @@ async def register_rasp(
         cord_x=cord_x,
         cord_y=cord_y,
         facing=validated_facing.value,
+        status="online",
+        last_update=datetime.utcnow(),
     )
     db.add(new_rasp)
     db.commit()
@@ -86,10 +89,21 @@ async def register_device(
             details=f"Attempt to register a device under a non-existent Rasp ID '{rasp_id}'"
         )
         raise HTTPException(status_code=404, detail=f"Rasp with ID '{rasp_id}' not found")
+    else:
+        rasp.last_update = datetime.utcnow()
+        if rasp.status == "offline":
+            rasp.status = "online"
+            await websocket_handler.toggle_rasp_status(rasp.id, "online")
+        db.commit()
+        db.refresh(rasp)
     
     device = db.query(Device).filter(Device.id == new_device_id).first()
     if device:
         device.battery = battery
+        device.last_update = datetime.utcnow()
+        if device.status == "offline":
+            device.status = "online"
+            await websocket_handler.toggle_device_status(device.id, "online")
         db.commit()
         db.refresh(device)
 
@@ -108,6 +122,8 @@ async def register_device(
             cord_x=cord_x,
             cord_y=cord_y,
             rasp_id=rasp_id,
+            status="online",
+            last_update=datetime.utcnow(),
         )
         db.add(new_device)
         db.commit()
@@ -166,6 +182,7 @@ def get_all_devices(db: Session = Depends(get_db)):
     return [
         {
             "id": device.id,
+            "status": device.status,
             "battery": device.battery,
             "cords": {"x": device.cord_x, "y": device.cord_y},
             "rasp_id": device.rasp.id if device.rasp else None
@@ -182,6 +199,7 @@ def get_all_rasps(db: Session = Depends(get_db)):
     return [
         {
             "id": rasp.id,
+            "status": rasp.status,
             "cords": {"x": rasp.cord_x, "y": rasp.cord_y},
             "facing": rasp.facing
         }

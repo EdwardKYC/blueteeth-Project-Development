@@ -167,6 +167,9 @@ async def navigate_to_book(
     try:
         rasp_directions, device, unique_color = navigator.navigate_to_book(book_id)
     except ValueError as e:
+        await history.log_warning(db=db, action="Navigate", details=f"Can't find a path for book(name: {book.name}, id: {book_id}), user: {user.username}. {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Can't find a path for book id {book.id}.")
+    except Exception as e:
         await history.log_error(db=db, action="Navigate", details=f"Unexpected error during navigation: {str(e)}")
         raise HTTPException(status_code=500, detail="An unexpected error occurred.")
 

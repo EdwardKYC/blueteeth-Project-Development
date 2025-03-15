@@ -73,9 +73,10 @@ class MapGraph:
         """從資料庫中讀取 Rasp 並自動建立地圖"""
         rasps = self.db.query(Rasp).all()
         for rasp in rasps:
-            self.node_manager.add_node(
-                rasp.id, rasp.cord_x, rasp.cord_y, CardinalDirection[rasp.facing]
-            )
+            if rasp.status == "online":
+                self.node_manager.add_node(
+                    rasp.id, rasp.cord_x, rasp.cord_y, CardinalDirection[rasp.facing]
+                )
         self._connect_rasps()
 
     def get_edges(self, node: Node) -> List[Tuple[Node, int]]:

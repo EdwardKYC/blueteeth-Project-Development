@@ -90,6 +90,7 @@ class WebSocketMessageHandler(metaclass=SingletonMeta):
             "type": "register_rasp",
             "payload" : {
                 "id": rasp.id,
+                "status": rasp.status,
                 "cords": {"x": rasp.cord_x, "y": rasp.cord_y},
                 "facing": rasp.facing
             }
@@ -101,6 +102,7 @@ class WebSocketMessageHandler(metaclass=SingletonMeta):
             "type": "register_device",
             "payload" : {
                 "id": device.id,
+                "status": device.status,
                 "battery": device.battery,
                 "cords": {"x": device.cord_x, "y": device.cord_y},
                 "rasp_id": device.rasp.id if device.rasp else None
@@ -137,6 +139,26 @@ class WebSocketMessageHandler(metaclass=SingletonMeta):
             "type": "remove_user",
             "payload" : {
                 "username": username
+            }
+        }
+        await self.manager.send_message(message)
+
+    async def toggle_rasp_status(self, id: str, status: str):
+        message = {
+            "type": "toggle_rasp_status",
+            "payload" : {
+                "id": id,
+                "status": status
+            }
+        }
+        await self.manager.send_message(message)
+
+    async def toggle_device_status(self, id: str, status: str):
+        message = {
+            "type": "toggle_device_status",
+            "payload" : {
+                "id": id,
+                "status": status
             }
         }
         await self.manager.send_message(message)

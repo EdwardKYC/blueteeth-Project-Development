@@ -17,12 +17,15 @@ class Navigator:
 
         # 查詢書籍
         book = device_manager.get_book_by_id(book_id)
-        print(f"書本: {book.cord_x, book.cord_y}")
+        # print(f"書本: {book.cord_x, book.cord_y}")
 
         # 找到起始位置和最近的 Rasp
         start_node = map.find_closest_node(0, 0)
         closest_rasp_to_book = map.find_closest_node(book.cord_x, book.cord_y)
 
+        if not start_node or (start_node.x != 0 or start_node.y != 0):
+            raise ValueError("No Rasp avalible to construct a path from (0, 0)")
+        
         if not closest_rasp_to_book:
             raise ValueError("No Rasp found near the book")
 

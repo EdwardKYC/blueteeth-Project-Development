@@ -6,11 +6,13 @@ import {
     addBookToDevice,
     removeUserFromDevice,
     updateDeviceBattery,
+    toggleDeviceStatus
 } from "../reducers/deviceSlice";
 import {
     insertRasp,
     addUserToRasp,
-    removeUserFromRasp
+    removeUserFromRasp,
+    toggleRaspStatus
 } from "../reducers/raspSlice";
 import {
     insertUser,
@@ -87,24 +89,42 @@ export const handleClearAllHistory = () => {
 	store.dispatch(clearHistory());
 };
 
-export const handleRegisterDevice = ({ id, battery, cords, rasp_id }) => {
-    if (!id || !battery || !cords) {
-        console.warn("Incomplete device data:", id, battery, cords, rasp_id);
+export const handleRegisterDevice = ({ id, status, battery, cords, rasp_id }) => {
+    if (!id || !status || !battery || !cords) {
+        console.warn("Incomplete device data:", id, status, battery, cords, rasp_id);
         return;
     }
-	store.dispatch(insertDevice({ id, battery, cords }));
+	store.dispatch(insertDevice({ id, status, battery, cords }));
 
 	if (rasp_id) {
 		store.dispatch(addRaspToDevice({ deviceId: id, raspId: rasp_id }))
 	}
 };
 
-export const handleRegisterRasp = ({ id, cords, facing }) => {
-    if (!id || !cords || !facing) {
-        console.warn("Incomplete rasp data:", id, cords, facing);
+export const handleRegisterRasp = ({ id, status, cords, facing }) => {
+    if (!id || !status || !cords || !facing) {
+        console.warn("Incomplete rasp data:", id, status, cords, facing);
         return;
     }
-	store.dispatch(insertRasp({ id, cords, facing }));
+	store.dispatch(insertRasp({ id, status, cords, facing }));
+};
+
+export const handleToggleRaspStatus = ({ id, status }) => {
+    if (!id || !status) {
+		console.warn("Incomplete rasp data:", id, status);
+		return;
+	}
+
+	store.dispatch(toggleRaspStatus({ raspId: id, status }));
+};
+
+export const handleToggleDeviceStatus = ({ id, status }) => {
+    if (!id || !status) {
+		console.warn("Incomplete device data:", id, status);
+		return;
+	}
+
+	store.dispatch(toggleDeviceStatus({ deviceId: id, status }));
 };
 
 export const handleRegisterBook = ({ id, name, description, device_id }) => {

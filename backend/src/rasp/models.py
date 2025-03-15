@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from src.database import Base
+from datetime import datetime
 
 class Rasp(Base):
     __tablename__ = "rasps"
@@ -9,6 +10,8 @@ class Rasp(Base):
     cord_x = Column(Integer, nullable=False)
     cord_y = Column(Integer, nullable=False)
     facing = Column(String, nullable=False)
+    status = Column(String, default="offline")  
+    last_update = Column(DateTime, default=datetime.utcnow)
 
     devices = relationship("Device", back_populates="rasp")
     
@@ -30,6 +33,8 @@ class Device(Base):
     battery = Column(Integer, nullable=False)
     cord_x = Column(Integer, nullable=False)
     cord_y = Column(Integer, nullable=False)
+    status = Column(String, default="offline")  
+    last_update = Column(DateTime, default=datetime.utcnow)
     
     rasp_id = Column(String, ForeignKey("rasps.id"), nullable=True)
     rasp = relationship("Rasp", back_populates="devices")

@@ -9,11 +9,11 @@ const deviceSlice = createSlice({
   initialState,
   reducers: {
     insertDevice(state, action) {
-      const { id, battery, cords } = action.payload;
+      const { id, status, battery, cords } = action.payload;
 
       if (state.byId[id]) return;
 
-      state.byId[id] = { id, battery, cords, books: [], users: [] };
+      state.byId[id] = { id, status, battery, cords, books: [], users: [] };
     },
     addBookToDevice(state, action) {
       const { deviceId, bookId, bookName } = action.payload;
@@ -63,8 +63,16 @@ const deviceSlice = createSlice({
         device.battery = battery;
       }
     },
+    toggleDeviceStatus(state, action) {
+      const { deviceId, status } = action.payload;
+
+      const device = state.byId[deviceId];
+      if (device) {
+        device.status = status;
+      }
+    }
   },
 });
 
-export const { insertDevice, addBookToDevice, addRaspToDevice, addUserToDevice, removeUserFromDevice, updateDeviceBattery } = deviceSlice.actions;
+export const { insertDevice, addBookToDevice, addRaspToDevice, addUserToDevice, removeUserFromDevice, updateDeviceBattery, toggleDeviceStatus } = deviceSlice.actions;
 export default deviceSlice.reducer;

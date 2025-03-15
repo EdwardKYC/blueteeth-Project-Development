@@ -9,11 +9,11 @@ const raspSlice = createSlice({
   initialState,
   reducers: {
     insertRasp(state, action) {
-      const { id, cords, facing } = action.payload;
+      const { id, status, cords, facing } = action.payload;
 
       if (state.byId[id]) return; 
 
-      state.byId[id] = { id, cords, facing, users: [] };
+      state.byId[id] = { id, status, cords, facing, users: [] };
     },
     removeUserFromRasp(state, action) {
       const { raspId, userName } = action.payload;
@@ -35,8 +35,16 @@ const raspSlice = createSlice({
 
       state.byId[raspId] = rasp; 
     },
+    toggleRaspStatus(state, action) {
+      const { raspId, status } = action.payload;
+
+      const rasp = state.byId[raspId]
+      if (!rasp) return
+
+      rasp.status = status
+    }
   },
 });
 
-export const { insertRasp, removeUserFromRasp, addUserToRasp } = raspSlice.actions;
+export const { insertRasp, removeUserFromRasp, addUserToRasp, toggleRaspStatus } = raspSlice.actions;
 export default raspSlice.reducer;

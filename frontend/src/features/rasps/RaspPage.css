@@ -13,6 +13,9 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .rasp-card {
@@ -21,6 +24,7 @@
     border-radius: 10px;
     padding: 15px;
     cursor: pointer;
+    width: 100%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -128,4 +132,32 @@
     font-size: 3em;
     color: rgb(133, 133, 133);
     
+}
+
+.rasp-status {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+}
+
+.rasp-header-right {
+    display: flex;
+    gap: 20px;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.status-dot.online {
+    background-color: #4caf50;
+}
+
+.status-dot.offline {
+    background-color: #e74c3c;
 }

@@ -28,7 +28,13 @@ const DeviceCard = ({ device }) => {
       <div className="device-card-left">
         <h2>{device.id}</h2>
         <p>Coordanates: ({device.cords.x}, {device.cords.y})</p>
-        <span className="device-cords">{device.rasp_id || "No Rasp Linked"}</span>
+        <div className="device-status-bar">
+          <span className="device-rasp">{device.rasp_id || "No Rasp Linked"}</span>
+          <div className="device-status">
+              <span className={`device-status-text ${device.status}`}>{device.status}</span>
+          </div>
+        </div>
+        
       </div>
       <div className="device-card-right">
         <div

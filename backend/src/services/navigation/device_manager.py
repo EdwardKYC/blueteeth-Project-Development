@@ -21,8 +21,8 @@ class DeviceManager:
         
         if book.device_id:
             device = self.db.query(Device).filter(Device.id == book.device_id).first()
-            if not device:
-                raise ValueError(f"Book {book_id} is associated with Device {book.device_id}, but the device is missing")
+            if not device or device.status == "offline":
+                raise ValueError(f"Book {book_id} is associated with Device {book.device_id}, but the device is either missing or offline")
         return book
 
     def assign_device_color(self, book: Book) -> Tuple[Device, str]:

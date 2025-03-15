@@ -41,9 +41,16 @@ const RaspPage = () => {
                       </p>
                     </div>
                   </div>
-                  <button className="expand-button">
-                    <FontAwesomeIcon icon={expandedRasp === rasp.id ? faChevronDown : faChevronRight} />
-                  </button>
+                  <div className="rasp-header-right">
+                    <div className="rasp-status">
+                        <span className={`status-dot ${rasp.status}`}></span>
+                        <span className="status-text">{rasp.status}</span>
+                    </div>
+                    <button className="expand-button">
+                      
+                      <FontAwesomeIcon icon={expandedRasp === rasp.id ? faChevronDown : faChevronRight} />
+                    </button>
+                  </div>
                 </div>
                 {expandedRasp === rasp.id && (
                   <div className="rasp-card-body">

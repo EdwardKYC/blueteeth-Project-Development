@@ -93,6 +93,8 @@ VITE_BASE_URL=https://d247-49-159-183-84.ngrok-free.app
 
 ## API 端點示例
 
+以下端點預設都是 `Content-Type: application/json`
+
 登入
 
 ```json
@@ -169,10 +171,14 @@ POST /api/v1/books/navigate
   "book_id": 1
 }
 
-RESPONSE
+RESPONSE（導航成功）
 {
   "message": "Successfully navigate for user yozen0405",
   "displayed_color": "#b7b106"
+}
+RESPONSE（導航失敗，status_code=400）
+{
+  "detail": "Can't find a path for book id 1."
 }
 ```
 
@@ -226,6 +232,8 @@ RESPONSE
 
 ## MQTT 訊息
 
+### 樹莓派訂閱雲端MQTT
+
 訂閱示例，rasp/rasp2 可換成想訂閱的樹莓派 id：
 
 ```bash
@@ -243,3 +251,12 @@ mosquitto_sub -h localhost -p 1883 -t "rasp/rasp2"
 
 {"action": "add_device_color", "userName": "yozen0405", "color": "#038fc2", "deviceId": "device3"}
 ```
+
+### 樹莓派發送給雲端MQTT
+
+主要的作用是讓雲端能即時同步樹莓派的狀態，主題為 `rasp/heartbeat`
+
+```bash
+mosquitto_pub -h localhost -p 1883 -t "rasp/heartbeat" -m '{"rasp_id": "rasp1"}'
+```
+
