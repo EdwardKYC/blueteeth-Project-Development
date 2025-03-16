@@ -9,7 +9,7 @@ const HistoryPage = () => {
   const firstTime = useRef(0);
 
   useEffect(() => {
-    if (consoleRef.current && (firstTime.current <= 1 || !document.hasFocus())) {
+    if (consoleRef.current && (firstTime.current <= 2 || !document.hasFocus())) {
       consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
       firstTime.current += 1;
     }
