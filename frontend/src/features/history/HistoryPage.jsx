@@ -1,10 +1,17 @@
-import React from "react";
+import React, {useEffect, useRef} from "react";
 import { useSelector } from "react-redux";
 import { clearAllHistoryLogs } from "../../services/api";
 import "./HistoryPage.css";
 
 const HistoryPage = () => {
   const history = useSelector((state) => state.history);
+  const consoleRef = useRef(null);
+
+  useEffect(() => {
+    if (consoleRef.current) {
+      consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+    }
+  }, [history.byId]);
 
   const handleClearAllHistory = async () => {
     try {
@@ -20,7 +27,7 @@ const HistoryPage = () => {
       <button className="clear-history-button" onClick={handleClearAllHistory}>
         Clear All History
       </button>
-      <div className="console">
+      <div className="console" ref={consoleRef}>
         {Object.values(history.byId).length > 0 ? (
           Object.values(history.byId).map((log) => (
             <div key={log.id} className="console-item">
