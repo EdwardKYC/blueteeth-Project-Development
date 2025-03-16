@@ -5,6 +5,7 @@ import DevicePage from "../features/devices/DevicePage";
 import BookPage from "../features/books/BookPage";
 import HistoryPage from "../features/history/HistoryPage";
 import DashboardPage from "../features/home/DashboardPage";
+import NotFoundPage from "../features/NotFoundPage";
 
 const AppRoutes = () => {
   return (
@@ -15,6 +16,7 @@ const AppRoutes = () => {
       <Route path="/users" element={<UserPage />} />
       <Route path="/devices" element={<DevicePage />} />
       <Route path="/history" element={<HistoryPage />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };

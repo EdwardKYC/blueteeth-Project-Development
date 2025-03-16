@@ -7,7 +7,6 @@ const AppBar = ({ toggleSidebar }) => {
 
   const handleClick = () => {
     navigate('/');
-    toggleSidebar();
   };
 
   return (

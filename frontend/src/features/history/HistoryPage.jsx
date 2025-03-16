@@ -6,10 +6,12 @@ import "./HistoryPage.css";
 const HistoryPage = () => {
   const history = useSelector((state) => state.history);
   const consoleRef = useRef(null);
+  const firstTime = useRef(0);
 
   useEffect(() => {
-    if (consoleRef.current) {
+    if (consoleRef.current && (firstTime.current <= 1 || !document.hasFocus())) {
       consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+      firstTime.current += 1;
     }
   }, [history.byId]);
 

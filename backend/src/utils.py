@@ -6,6 +6,7 @@ from src.dependencies import get_db
 from src.rasp.models import Rasp, Device
 from src.history.service import HistoryService
 from src.websockets import WebSocketMessageHandler
+from src.config import global_config
 
 history = HistoryService()
 websocket_handler = WebSocketMessageHandler()
@@ -13,15 +14,14 @@ websocket_handler = WebSocketMessageHandler()
 async def check_alive_status():
     while True:
         await asyncio.sleep(30)  
-        # print("檢查裝態")
         db_session = next(get_db())
 
         try:
             now = datetime.utcnow()
-            one_minute_ago = now - timedelta(seconds=30)
+            time_span = now - timedelta(seconds=global_config.DEVICE_STATUS_EXPIRE_SECONDS)
 
-            dead_rasps = db_session.query(Rasp).filter(Rasp.last_update < one_minute_ago, Rasp.status == "online").all()
-            dead_devices = db_session.query(Device).filter(Device.last_update < one_minute_ago, Device.status == "online").all()
+            dead_rasps = db_session.query(Rasp).filter(Rasp.last_update < time_span, Rasp.status == "online").all()
+            dead_devices = db_session.query(Device).filter(Device.last_update < time_span, Device.status == "online").all()
 
             for rasp in dead_rasps:
                 rasp.status = "offline"

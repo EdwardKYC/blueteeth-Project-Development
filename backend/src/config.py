@@ -7,6 +7,7 @@ class GlobalConfig(BaseSettings):
     ALGORITHM: str
     AUTH_TOKEN_URL: str
     DEFAULT_ACCESS_TOKEN_EXPIRE_MINUTES: int
+    DEVICE_STATUS_EXPIRE_SECONDS: int
 
     model_config = {
         "env_file": ".env",
