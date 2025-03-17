@@ -1,2 +1,4 @@
 nrf52840
+nrf03
+nrf02
 DC:F2:5C:94:9D:DE
