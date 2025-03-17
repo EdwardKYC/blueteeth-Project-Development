@@ -13,9 +13,10 @@ const BookDetailPage = ({ bookId }) => {
     );
   }
 
+  const hasShortDescription = !book.description || book.description.length < 20;
+
   return (
-    <div className="book-detail-page">
-      
+    <div className={`book-detail-page ${hasShortDescription ? "column-layout" : ""}`}>
       <div className="book-detail-info">
         <h1>{book.name}</h1>
         {book.device && (

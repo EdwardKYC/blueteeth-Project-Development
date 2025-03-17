@@ -18,6 +18,8 @@
   border-radius: 12px;
   overflow: hidden;
   min-width: 40vw;
+  max-width: 60vw;
+  margin: 0 auto;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
@@ -81,4 +83,8 @@
     .book-detail-page {
         flex-direction: column;
     }
+}
+
+.book-detail-page.column-layout {
+  flex-direction: column;
 }
