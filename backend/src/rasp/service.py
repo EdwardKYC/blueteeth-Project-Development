@@ -60,7 +60,7 @@ def toggle_user_device(user: User, db: Session, device_id: str = None, color: st
 
     new_link = UserDeviceLink(user_id=user.id, device_id=device_id, color=color)
     db.add(new_link)
-    mqtt_message_handler.add_device_color(device_id=device_id, user_name=user.username, color=color, db=db)
+    mqtt_message_handler.add_device_color(device_id=device_id, color=color, db=db)
 
 def toggle_user_book(user: User, db: Session, book_id: str = None):
     if not book_id:

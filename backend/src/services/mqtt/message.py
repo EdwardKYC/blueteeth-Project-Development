@@ -32,13 +32,12 @@ class MQTTMessageHandler(metaclass=SingletonMeta):
         }
         self.mqtt_client.publish(topic, payload)
 
-    def add_device_color(self, user_name: str, device_id: str, color: str, db: Session):
+    def add_device_color(self, device_id: str, color: str, db: Session):
         """Publish device color update message."""
         rasp_id = self._get_rasp_id_from_device(device_id, db)
         topic = self.TOPIC_TEMPLATE.format(rasp_id=rasp_id)
         payload = {
             "action": "add_device_color",
-            "userName": user_name,
             "color": color,
             "deviceId": device_id
         }
