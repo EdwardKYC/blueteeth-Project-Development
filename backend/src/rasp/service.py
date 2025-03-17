@@ -16,7 +16,9 @@ def toggle_user_rasp(user: User, db: Session, rasp_id: str = None, color: str = 
             return
         
         for link in rasp_links:
-            mqtt_message_handler.cancel_rasp_navigation(rasp_id=link.rasp_id, user_name=user.username)
+            rasp = db.query(Rasp).filter(Rasp.id == link.rasp_id).first()
+            if rasp.status == "online":
+                mqtt_message_handler.cancel_rasp_navigation(rasp_id=link.rasp_id, user_name=user.username)
             db.delete(link)
             
         return
@@ -43,7 +45,9 @@ def toggle_user_device(user: User, db: Session, device_id: str = None, color: st
         if not device_link:
             raise ResourceAlreadyDeletedException()
         else:
-            mqtt_message_handler.cancel_device_navigation(device_id=device_link.device_id, user_name=user.username, db=db)
+            device = db.query(Device).filter(Device.id == device_link.device_id).first()
+            if device.status == "online":
+                mqtt_message_handler.cancel_device_navigation(device_id=device_link.device_id, user_name=user.username, db=db)
             db.delete(device_link)
         return
 
