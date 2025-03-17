@@ -1,9 +1,13 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import "./BookDetailPage.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'; 
+import { useNavigate } from "react-router-dom";
 
 const BookDetailPage = ({ bookId }) => {
   const book = useSelector((state) => state.books.byId[bookId]);
+  const navigate = useNavigate();
 
   if (!book) {
     return (
@@ -18,7 +22,13 @@ const BookDetailPage = ({ bookId }) => {
   return (
     <div className={`book-detail-page ${hasShortDescription ? "column-layout" : ""}`}>
       <div className="book-detail-info">
-        <h1>{book.name}</h1>
+        <button className="book-detail-back-button" onClick={() => navigate(-1)}>
+          <FontAwesomeIcon icon={faArrowLeft} className="book-detail-back-icon"/> Back
+        </button>
+        <div className="book-detail-title">
+          <h1>{book.name}</h1>
+          <p className="book-id">ID: {bookId}</p>
+        </div>
         {book.device && (
             <div className="device-detail-tag ">{book.device.id}</div>
         )}

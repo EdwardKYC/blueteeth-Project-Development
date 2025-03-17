@@ -68,6 +68,10 @@
   height: 180px; 
 }
 
+.book-card:hover {
+  cursor: pointer;
+}
+
 .book-card-top {
   padding: 20px;
   flex-grow: 1;

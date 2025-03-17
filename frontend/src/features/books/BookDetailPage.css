@@ -18,7 +18,7 @@
   border-radius: 12px;
   overflow: hidden;
   min-width: 40vw;
-  max-width: 60vw;
+  max-width: 600px;
   margin: 0 auto;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
@@ -87,4 +87,32 @@
 
 .book-detail-page.column-layout {
   flex-direction: column;
+}
+
+.book-detail-back-button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #007bff;
+  cursor: pointer;
+  margin-bottom: 10px;
+  padding: 10px 5px;
+  border-radius: 15px;
+}
+
+.book-detail-back-button:hover {
+  background-color: #dceaf9;
+}
+
+.book-detail-back-icon {
+  font-size: 1.2rem;
+  margin-right: 5px;
+}
+
+.book-id {
+  font-size: 0.9em;
+  color: #777;
+  margin-bottom: 10px;
 }
