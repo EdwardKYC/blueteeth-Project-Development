@@ -7,6 +7,7 @@ from src.rasp.models import Rasp, Device
 from src.history.service import HistoryService
 from src.websockets import WebSocketMessageHandler
 from src.config import global_config
+from src.users.models import UserRaspLink, UserDeviceLink
 
 history = HistoryService()
 websocket_handler = WebSocketMessageHandler()
@@ -27,10 +28,14 @@ async def check_alive_status():
                 rasp.status = "offline"
             for device in dead_devices:
                 device.status = "offline"
-
-            db_session.commit()
+            
             dead_rasp_ids = [rasp.id for rasp in dead_rasps]
             dead_device_ids = [device.id for device in dead_devices]
+
+            deleted_rasp_links = db_session.query(UserRaspLink).filter(UserRaspLink.rasp_id.in_(dead_rasp_ids)).delete(synchronize_session=False)
+            deleted_device_links = db_session.query(UserDeviceLink).filter(UserDeviceLink.device_id.in_(dead_device_ids)).delete(synchronize_session=False)
+
+            db_session.commit()
 
             if len(dead_rasps) != 0:
                 await history.log_warning(
