@@ -12,19 +12,23 @@
 
 ### 前期部署
 
-![Image](https://github.com/user-attachments/assets/ba84cdcb-d7f6-4e9f-80b6-7c2c161c2215)
+![Image](https://github.com/user-attachments/assets/0de63b8c-2181-4d22-ba46-371b9ee31f15)
 
 ### 使用者開啟 app
 
-![Image](https://github.com/user-attachments/assets/d476a48b-5554-48e8-8d4e-02c82ed91b11)
+![Image](https://github.com/user-attachments/assets/df3c50a8-02e4-46e1-af1a-66cb8a000202)
 
 ### 使用者選取書籍
 
-![Image](https://github.com/user-attachments/assets/389e7c95-0ff9-4e87-b1fc-32635c7cab72)
+![Image](https://github.com/user-attachments/assets/4a4dab76-305a-4db3-969c-f291c137bedd)
+
+### 使用者取消書籍
+
+![Image](https://github.com/user-attachments/assets/dab8da77-9539-4206-a9d1-e40ae19293da)
 
 ### 實時更新
 
-![Image](https://github.com/user-attachments/assets/d1bb935d-8451-49b7-85e3-f718d01bd59c)
+![Image](https://github.com/user-attachments/assets/9940d1e9-d2a8-437e-a7dc-f116dd2d0488)
 
 ## API 端點示例
 
