@@ -184,5 +184,5 @@ mosquitto_sub -h localhost -p 1883 -t "rasp/rasp2"
 
 {"action": "add_rasp_direction", "userName": "yozen0405", "direction": "RIGHT", "color": "#038fc2"}
 
-{"action": "add_device_color", "userName": "yozen0405", "color": "#038fc2", "deviceId": "device3"}
+{"action": "add_device_color", "color": "#038fc2", "deviceId": "device3"}
 ```
