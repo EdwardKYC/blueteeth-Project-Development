@@ -5,7 +5,7 @@ import requests
 import asyncio
 from cloud_command import cancel_device_navigation, add_device_color
 
-API_URL = "http://210.242.67.61:1160"
+API_URL = "http://7776-140-116-247-243.ngrok-free.app"
 users = []
 current_label = None
 

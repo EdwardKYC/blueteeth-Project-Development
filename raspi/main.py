@@ -8,8 +8,8 @@ import cloud_receive  # ✅ 確保 UI 可用
 from nrf_command import send_message_to_ble_device, notification_handler
 
 # MQTT 設定
-BROKER_ADDRESS = "210.242.67.61"
-PORT = 1163
+BROKER_ADDRESS = "0.tcp.jp.ngrok.io"
+PORT = 19785
 DEVICE = "rasp1"
 TOPIC = "rasp/" + DEVICE 
 NOTIFY_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
