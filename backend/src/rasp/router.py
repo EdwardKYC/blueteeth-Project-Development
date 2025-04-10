@@ -107,6 +107,11 @@ async def register_device(
             await websocket_handler.toggle_rasp_status(rasp.id, "online")
         db.commit()
         db.refresh(rasp)
+
+    if battery == 0:
+        battery = 1
+    elif battery > 100:
+        battery = 100
     
     device = db.query(Device).filter(Device.id == new_device_id).first()
     if device:
@@ -121,6 +126,8 @@ async def register_device(
             await websocket_handler.toggle_device_status(device.id, "online")
 
         if device.battery != battery:
+            if device.battery > 100:
+                device.battery = 100
             device.battery = battery
             await history.log_info(
                 db=db,

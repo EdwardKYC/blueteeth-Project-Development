@@ -74,3 +74,26 @@
     gap: 1em;
   }
 }
+
+
+.device-detail-back-button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #007bff;
+  cursor: pointer;
+  margin-bottom: 10px;
+  padding: 10px 5px;
+  border-radius: 15px;
+}
+
+.device-detail-back-button:hover {
+  background-color: #dceaf9;
+}
+
+.device-detail-back-icon {
+  font-size: 1.2rem;
+  margin-right: 5px;
+}

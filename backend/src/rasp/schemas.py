@@ -7,7 +7,7 @@ class RegisterRaspSchema(BaseModel):
     rasp_id: str = Field(..., min_length=1, max_length=100, description="The associated Rasp ID")
 
 class RegisterDeviceSchema(BaseModel):
-    battery: int = Field(..., ge=0, le=100, description="Battery percentage of the device")
+    battery: int = Field(..., description="Battery percentage of the device")
     cord_x: int = Field(..., description="The X coordinate of the device")
     cord_y: int = Field(..., description="The Y coordinate of the device")
     rasp_id: str = Field(..., min_length=1, max_length=100, description="The associated Rasp ID")

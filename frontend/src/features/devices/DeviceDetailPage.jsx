@@ -1,8 +1,12 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'; 
+import { useNavigate } from "react-router-dom";
 import "./DeviceDetailPage.css";
 
 const DeviceDetailPage = ({ deviceId }) => {
+  const navigate = useNavigate();
   const device = useSelector((state) => state.devices.byId[deviceId]);
 
   if (!device) {
@@ -17,6 +21,9 @@ const DeviceDetailPage = ({ deviceId }) => {
 
   return (
     <div className="device-detail-page">
+      <button className="device-detail-back-button" onClick={() => navigate(-1)}>
+        <FontAwesomeIcon icon={faArrowLeft} className="device-detail-back-icon"/> Back
+      </button>
       <h1>Details of {device.id}</h1>
       <div className="detail-container">
         <div className="detail-card">
