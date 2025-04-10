@@ -1,3 +1,4 @@
+#config.py
 from bleak import BleakClient
 
 class ConnectedDevice:

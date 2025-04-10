@@ -62,6 +62,7 @@ def handle_command(category, payload):
 
 def process_command(category, payload):
     """處理 UI 更新，確保在 Tkinter 主執行緒內執行"""
+    global loop
     if category == "cancel_rasp_navigation":
         user_name = payload.get("userName")
         print(f"取消 {user_name} 的方向指引")
@@ -78,13 +79,13 @@ def process_command(category, payload):
         device_id = payload.get("deviceId")
         color = payload.get("color")
         print(f"為裝置 {device_id} 新增顏色: {color}")
-        asyncio.create_task(add_device_color(device_id, color))
-    
+        asyncio.run_coroutine_threadsafe(add_device_color(device_id, color), loop)
+
     elif category == "cancel_device_navigation":
         color = payload.get("color")
         device_id = payload.get("deviceId")
         print(f"取消裝置 {device_id} 的顏色: {color}")
-        asyncio.create_task(cancel_device_navigation(device_id, color))
+        asyncio.run_coroutine_threadsafe(cancel_device_navigation(device_id, color), loop)
 
 def send_nrf_message(message_str):
     """透過 REST API 發送裝置資訊"""

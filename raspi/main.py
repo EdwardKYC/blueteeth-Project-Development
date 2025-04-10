@@ -1,3 +1,4 @@
+# main.py
 import asyncio
 import json
 import threading
@@ -77,6 +78,7 @@ async def connect_and_listen(device):
         try:
             async with BleakClient(device.address) as client:
                 print(f"✅ 已成功連線到 {device.name} ({device.address})")
+                device.client = client
                 await send_message_to_ble_device(client, "change color")
                 print(f"📩 訊息已發送: change color")
 
@@ -87,6 +89,7 @@ async def connect_and_listen(device):
                     await asyncio.sleep(10)
         except Exception as e:
             print(f"[Error] {device.name} 連線中斷: {e}")
+            device.client = None
             print("2 秒後重新嘗試連線...")
             await asyncio.sleep(2)
 
@@ -121,8 +124,9 @@ async def scan_and_connect():
 
             if d.address not in [dev.address for dev in connected_devices]:
                 print(f"🔗 嘗試連線到 {d.name} ({d.address})...")
-                connected_devices.append(ConnectedDevice(d.name, d.address))  # ✅ 記錄裝置
-                asyncio.create_task(connect_and_listen(d)) 
+                new_device = ConnectedDevice(d.name, d.address)
+                connected_devices.append(new_device)
+                asyncio.create_task(connect_and_listen(new_device))
         else:
             print("⚠️ 未掃描到目標裝置，5 秒後重試...")
         
