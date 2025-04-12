@@ -2,13 +2,13 @@
 from bleak import BleakClient
 
 class ConnectedDevice:
-    def __init__(self, name, mac_address, client=None):
+    def __init__(self, name, address, client=None):
         self.name = name
-        self.mac_address = mac_address
+        self.address = address
         self.client = client 
 
     def __repr__(self):
-        return f"ConnectedDevice(name='{self.name}', mac_address='{self.mac_address}')"
+        return f"ConnectedDevice(name='{self.name}', address='{self.address}')"
 
 # 建立空的列表來存放裝置
 connected_devices = []

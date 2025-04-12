@@ -5,9 +5,10 @@ import requests
 import asyncio
 from cloud_command import cancel_device_navigation, add_device_color
 
-API_URL = "http://7776-140-116-247-243.ngrok-free.app"
+API_URL = "https://be3b-2402-7500-afc-b430-e9ad-3c16-df93-4d4f.ngrok-free.app"
 users = []
 current_label = None
+loop = None
 
 root = tk.Tk()
 root.title("Direction Display App")
@@ -62,6 +63,7 @@ def handle_command(category, payload):
 
 def process_command(category, payload):
     """處理 UI 更新，確保在 Tkinter 主執行緒內執行"""
+    print("process_command called:", category, payload)
     global loop
     if category == "cancel_rasp_navigation":
         user_name = payload.get("userName")

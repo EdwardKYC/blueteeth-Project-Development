@@ -10,7 +10,7 @@ from nrf_command import send_message_to_ble_device, notification_handler
 
 # MQTT 設定
 BROKER_ADDRESS = "0.tcp.jp.ngrok.io"
-PORT = 19785
+PORT = 19327
 DEVICE = "rasp1"
 TOPIC = "rasp/" + DEVICE 
 NOTIFY_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
@@ -78,7 +78,6 @@ async def connect_and_listen(device):
         try:
             async with BleakClient(device.address) as client:
                 print(f"✅ 已成功連線到 {device.name} ({device.address})")
-                device.client = client
                 await send_message_to_ble_device(client, "change color")
                 print(f"📩 訊息已發送: change color")
 
@@ -89,7 +88,6 @@ async def connect_and_listen(device):
                     await asyncio.sleep(10)
         except Exception as e:
             print(f"[Error] {device.name} 連線中斷: {e}")
-            device.client = None
             print("2 秒後重新嘗試連線...")
             await asyncio.sleep(2)
 
@@ -124,9 +122,8 @@ async def scan_and_connect():
 
             if d.address not in [dev.address for dev in connected_devices]:
                 print(f"🔗 嘗試連線到 {d.name} ({d.address})...")
-                new_device = ConnectedDevice(d.name, d.address)
-                connected_devices.append(new_device)
-                asyncio.create_task(connect_and_listen(new_device))
+                connected_devices.append(ConnectedDevice(d.name, d.address))  # ✅ 記錄裝置
+                asyncio.create_task(connect_and_listen(d)) 
         else:
             print("⚠️ 未掃描到目標裝置，5 秒後重試...")
         
@@ -137,8 +134,16 @@ async def main():
     await asyncio.gather(mqtt_loop(), scan_and_connect())  # ✅ 讓 MQTT & BLE 並行執行
 
 def start_asyncio():
-    """在背景執行 asyncio"""
-    asyncio.run(main())
+    # 建立一個新的 asyncio 事件迴圈
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    # 將此事件迴圈賦值給 cloud_receive 模組中的全域變數 loop
+    cloud_receive.loop = loop
+    # 排程 main()（裡面使用 asyncio.gather 啟動 MQTT 與 BLE 掃描）
+    loop.create_task(main())
+    # 保持事件迴圈持續執行，這樣 cloud_receive 中調度的協程也能被執行
+    loop.run_forever()
+
 
 if __name__ == "__main__":
     try:

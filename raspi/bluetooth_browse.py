@@ -15,39 +15,45 @@ def load_target_names(filename="bluelist.txt"):
         return []
 
 async def connect_and_listen(device):
-    """與 BLE 裝置連線並保持監聽"""
+    """與 BLE 裝置連線並保持監聽（持久連線版）"""
+    # 建立 BleakClient 實例，但不使用 async with
+    client = BleakClient(device.address)
     try:
-        async with BleakClient(device.address) as client:
-            print(f"✅ 已成功連線到 {device.name} ({device.address})")
+        # 手動呼叫連線
+        await client.connect()
+        if not client.is_connected:
+            print(f"[Error] 無法連線到 {device.name} ({device.address})")
+            return
 
-            for dev in connected_devices:
-                if dev.mac_address == device.address:
-                    dev.client = client  # ✅ 存入 `BleakClient` 實例
-                    break
+        print(f"✅ 已成功連線到 {device.name} ({device.address})")
 
-            # 送出初始指令
-            await send_message_to_ble_device(client, "change color")
-            print(f"📩 訊息已發送: change color")
+        for dev in connected_devices:
+            if dev.address == device.address:
+                dev.client = client  # 存入 BleakClient 實例
+                break
 
-            # 啟用通知
-            await client.start_notify(NOTIFY_UUID, notification_handler)
-            print("🔔 已啟用通知功能，等待資料...")
+        await send_message_to_ble_device(client, "change color")
+        print(f"📩 訊息已發送: change color")
 
-            # 持續監聽
-            while await client.is_connected():
-                await asyncio.sleep(10)
+        await client.start_notify(NOTIFY_UUID, notification_handler)
+        print("🔔 已啟用通知功能，等待資料...")
+
+        while client.is_connected:
+            await asyncio.sleep(10)
 
     except Exception as e:
         print(f"[Error] {device.name} 連線中斷: {e}")
 
     finally:
+        # 手動斷線（如果連線仍然存續）
         if client.is_connected:
             await client.disconnect()
             print(f"🔌 {device.name} 已斷線")
-
+        # 從連線列表中移除該裝置
         if device in connected_devices:
-            connected_devices.remove(device)  # ✅ **從列表中移除裝置**
+            connected_devices.remove(device)
         print(f"⚠️ {device.name} 斷線，等待重新掃描...")
+
 
 
 async def main():
