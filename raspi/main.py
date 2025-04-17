@@ -1,11 +1,10 @@
-# main.py
 import asyncio
 import json
 import threading
 import paho.mqtt.client as mqtt
 from bleak import BleakScanner, BleakClient
 from config import connected_devices, ConnectedDevice
-import cloud_receive  # ✅ 確保 UI 可用
+import cloud_receive
 from nrf_command import send_message_to_ble_device, notification_handler
 
 # MQTT 設定
@@ -39,8 +38,8 @@ def on_message(client, userdata, message):
 
         if action in COMMAND_CATEGORIES:
             category = COMMAND_CATEGORIES[action]
-            print(f"[MQTT] 收到指令: {category}")
-            cloud_receive.handle_command(category, payload)  # ✅ 更新 UI
+            print(f"[MQTT] 收到指令: {category}, 完整 payload: {payload}")
+            cloud_receive.handle_command(category, payload)
         else:
             print(f"[Warning] 未知的指令: {action}")
     except json.JSONDecodeError:
@@ -66,30 +65,54 @@ async def mqtt_loop():
 
     try:
         mqtt_client.connect(BROKER_ADDRESS, PORT, 60)
-        mqtt_client.loop_start()  # ✅ 讓 MQTT 在背景執行，不阻塞 asyncio
+        mqtt_client.loop_start()
         while True:
-            await asyncio.sleep(1)  # ✅ 避免阻塞，確保 MQTT 保持運行
+            await asyncio.sleep(1)
     except Exception as e:
         print(f"[Error] 連接 MQTT Broker 失敗: {e}")
 
 async def connect_and_listen(device):
     """與 BLE 裝置連線並保持連線"""
-    while True:
-        try:
-            async with BleakClient(device.address) as client:
-                print(f"✅ 已成功連線到 {device.name} ({device.address})")
-                await send_message_to_ble_device(client, "change color")
-                print(f"📩 訊息已發送: change color")
+    client = BleakClient(device.address)
+    try:
+        await client.connect()
+        if not client.is_connected:
+            print(f"[Error] 無法連線到 {device.name} ({device.address})")
+            return
 
-                await client.start_notify(NOTIFY_UUID, notification_handler)
-                print("🔔 已啟用通知功能，等待資料...")
+        print(f"✅ 已成功連線到 {device.name} ({device.address})")
 
-                while True:
-                    await asyncio.sleep(10)
-        except Exception as e:
-            print(f"[Error] {device.name} 連線中斷: {e}")
-            print("2 秒後重新嘗試連線...")
-            await asyncio.sleep(2)
+        # 更新 connected_devices 中的 client
+        for dev in connected_devices:
+            if dev.address == device.address:
+                dev.client = client
+                break
+        else:
+            # 如果 device 不在 connected_devices 中，添加它
+            connected_devices.append(ConnectedDevice(device.name, device.address, client))
+
+        await send_message_to_ble_device(client, "change color")
+        print(f"📩 訊息已發送: change color")
+
+        await client.start_notify(NOTIFY_UUID, notification_handler)
+        print("🔔 已啟用通知功能，等待資料...")
+
+        while client.is_connected:
+            await asyncio.sleep(10)
+
+    except Exception as e:
+        print(f"[Error] {device.name} 連線中斷: {e}")
+    finally:
+        if client.is_connected:
+            await client.disconnect()
+            print(f"🔌 {device.name} 已斷線")
+        # 更新 client 為 None
+        for dev in connected_devices:
+            if dev.address == device.address:
+                dev.client = None
+                break
+        print(f"⚠️ {device.name} 斷線，等待重新掃描...")
+        await asyncio.sleep(2)
 
 def load_target_names(filename="bluelist.txt"):
     """讀取目標藍牙裝置名稱"""
@@ -102,7 +125,7 @@ def load_target_names(filename="bluelist.txt"):
 
 async def scan_and_connect():
     """掃描藍牙裝置並嘗試連接"""
-    target_names = load_target_names()  # 這裡填入目標裝置名稱列表
+    target_names = load_target_names()
     while True:
         cloud_receive.send_rasp_message(DEVICE)
         print("🔍 開始 BLE 掃描 (5 秒)...")
@@ -111,7 +134,7 @@ async def scan_and_connect():
         except Exception as e:
             print(f"[Error] BLE 掃描失敗: {e}")
             await asyncio.sleep(5)
-            continue  # 繼續執行下一次掃描
+            continue
 
         target_devices = [d for d in devices if d.name in target_names]
 
@@ -120,41 +143,35 @@ async def scan_and_connect():
             for d in target_devices:
                 print(f"   - {d.name} ({d.address})")
 
-            if d.address not in [dev.address for dev in connected_devices]:
-                print(f"🔗 嘗試連線到 {d.name} ({d.address})...")
-                connected_devices.append(ConnectedDevice(d.name, d.address))  # ✅ 記錄裝置
-                asyncio.create_task(connect_and_listen(d)) 
+            for d in target_devices:
+                # 檢查是否已連線，避免重複連線
+                if d.address not in [dev.address for dev in connected_devices if dev.client is not None]:
+                    print(f"🔗 嘗試連線到 {d.name} ({d.address})...")
+                    # 添加到 connected_devices（如果尚未存在）
+                    if d.address not in [dev.address for dev in connected_devices]:
+                        connected_devices.append(ConnectedDevice(d.name, d.address))
+                    asyncio.create_task(connect_and_listen(d))
         else:
             print("⚠️ 未掃描到目標裝置，5 秒後重試...")
         
-        await asyncio.sleep(5)  
+        await asyncio.sleep(5)
 
 async def main():
     """同時執行 MQTT 監聽 & BLE 掃描"""
-    await asyncio.gather(mqtt_loop(), scan_and_connect())  # ✅ 讓 MQTT & BLE 並行執行
+    await asyncio.gather(mqtt_loop(), scan_and_connect())
 
 def start_asyncio():
-    # 建立一個新的 asyncio 事件迴圈
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    # 將此事件迴圈賦值給 cloud_receive 模組中的全域變數 loop
     cloud_receive.loop = loop
-    # 排程 main()（裡面使用 asyncio.gather 啟動 MQTT 與 BLE 掃描）
     loop.create_task(main())
-    # 保持事件迴圈持續執行，這樣 cloud_receive 中調度的協程也能被執行
     loop.run_forever()
-
 
 if __name__ == "__main__":
     try:
         print("start")
-
-        # ✅ 使用 threading 來讓 asyncio 在背景執行
         asyncio_thread = threading.Thread(target=start_asyncio, daemon=True)
         asyncio_thread.start()
-
-        # ✅ 讓 Tkinter 在主執行緒執行
         cloud_receive.root.mainloop()
-    
     except KeyboardInterrupt:
         print("❌ 程序終止。")
