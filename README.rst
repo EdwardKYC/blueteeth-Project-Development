@@ -26,14 +26,14 @@ Zephyr tree.
 
 See :ref:`bluetooth samples section <bluetooth-samples>` for details.
 
-# nRF52840 BLE RGB LED Controller and Battery Monitor
+* nRF52840 BLE RGB LED Controller and Battery Monitor
 
 This project implements a Bluetooth Low Energy (BLE) peripheral application on the **nRF52840** platform using **Zephyr RTOS**.  
 The firmware supports remote control of RGB LEDs via BLE commands and periodically reports battery voltage information through the **Nordic UART Service (NUS)**.
 
 ---
 
-## Features
+** Features
 
 - Bluetooth LE advertising and connection via NUS (Nordic UART Service)
 - Remote RGB LED color control using plain-text BLE commands
@@ -43,7 +43,7 @@ The firmware supports remote control of RGB LEDs via BLE commands and periodical
 
 ---
 
-## Hardware Configuration
+** Hardware Configuration
 
 The following GPIOs and peripherals are used in this application:
 
@@ -58,9 +58,9 @@ The following GPIOs and peripherals are used in this application:
 
 ---
 
-## BLE Communication
+** BLE Communication
 
-### LED Control Commands
+*** LED Control Commands
 
 This firmware listens for text-based commands sent over the NUS service. To control the LED color, send:
 
