@@ -30,6 +30,10 @@
 
 ![Image](https://github.com/user-attachments/assets/9940d1e9-d2a8-437e-a7dc-f116dd2d0488)
 
+### 儀表板更新
+
+![Image](https://github.com/user-attachments/assets/7a943110-895a-40f5-a726-e36a87f09d4c)
+
 ## API 端點示例
 
 以下端點預設都是 `Content-Type: application/json`

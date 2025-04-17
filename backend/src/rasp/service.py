@@ -43,7 +43,7 @@ def toggle_user_device(user: User, db: Session, device_id: str = None, color: st
     if not device_id:
         device_link = db.query(UserDeviceLink).filter(UserDeviceLink.user_id == user.id).first()
         if not device_link:
-            raise ResourceAlreadyDeletedException()
+            return
         else:
             device = db.query(Device).filter(Device.id == device_link.device_id).first()
             if device.status == "online":
