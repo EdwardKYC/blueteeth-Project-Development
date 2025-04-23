@@ -10,7 +10,7 @@ from src.rasp.service import toggle_user_device, toggle_user_rasp, toggle_user_b
 from src.services.navigation.navigator import Navigator
 from src.websockets import WebSocketMessageHandler
 from src.history.service import HistoryService
-from src.books.exceptions import ResourceAlreadyExistsException, ResourceNotFoundException, ResourceAlreadyDeletedException
+from src.books.exceptions import ResourceAlreadyExistsException, ResourceNotFoundException, ResourceAlreadyDeletedException, NoAvailableColorException
 from .schemas import SearchBookSchema, RegisterBookSchema, NavigateBookSchema
 
 from typing import List
@@ -166,6 +166,13 @@ async def navigate_to_book(
 
     try:
         rasp_directions, device, unique_color = navigator.navigate_to_book(book_id)
+    except NoAvailableColorException as e:
+        db.rollback()
+        await history.log_warning(
+            db=db, action="Navigate",
+            details=f"Failed to navigate due to color exhaustion for user: {user.username}"
+        )
+        raise HTTPException(status_code=400, detail="Navigation failed: no available colors left.")
     except ValueError as e:
         await history.log_warning(db=db, action="Navigate", details=f"Can't find a path for book(name: {book.name}, id: {book_id}), user: {user.username}. {str(e)}")
         raise HTTPException(status_code=400, detail=f"Can't find a path for book id {book.id}.")
