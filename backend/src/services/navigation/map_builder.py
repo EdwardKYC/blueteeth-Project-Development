@@ -147,7 +147,6 @@ class MapGraph:
             (True, True), (True, False), (False, True), (False, False)
         ]:
             neighbor = self._find_and_connect(start_node, is_x_axis, is_positive, do_add_edge=False)
-            print(f"鄰居：{neighbor.node_id}, cord: ({neighbor.x}, {neighbor.y}), 我：{start_node.x}, {start_node.y}")
             if neighbor and neighbor.node_id not in visited:
                 direction = self._calculate_direction(neighbor, start_node)
                 if direction is not None:
