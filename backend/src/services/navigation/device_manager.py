@@ -40,13 +40,12 @@ class DeviceManager:
 
     def generate_unique_color(self) -> str:
         available_colors = [
-            "#ff0000",  # Red
-            "#00ff00",  # Green
-            "#0000ff",  # Blue
-            "#ffff00",  # Yellow
-            "#ff00ff",  # crimson
-            "#00ffff",  # Aqua
-            "#ffa500",  # Orange
+            "#ed2939",  # 紅 Red
+            "#fb9417",  # 黃 Yellow
+            "#0b6623",  # 綠 Green
+            "#1338be",  # 藍 Blue
+            "#8a00c2",  # 紫 Purple
+            "#18848e",  # 青 Cyan
         ]
 
         used_colors = {row[0] for row in self.db.query(UserDeviceLink.color).all() if row[0]}
