@@ -94,11 +94,3 @@ Testing
 3. Scan and connect to the device named `nrf03`.
 4. Use the UART/NUS console to send commands like `change color: green`.
 5. Observe RGB LED color change and periodic battery status messages every 10 seconds.
-
-References
-**********
-
-* :ref:`bluetooth samples section <bluetooth-samples>`
-* :ref:`adc_interface`
-* :ref:`gpio_interface`
-* :ref:`nus_service`
