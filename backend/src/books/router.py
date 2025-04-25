@@ -12,7 +12,10 @@ from src.websockets import WebSocketMessageHandler
 from src.history.service import HistoryService
 from src.books.exceptions import ResourceAlreadyExistsException, ResourceNotFoundException, ResourceAlreadyDeletedException, NoAvailableColorException
 from .schemas import SearchBookSchema, RegisterBookSchema, NavigateBookSchema
+from src.books.models import BookBorrowHistory
 
+from datetime import datetime
+import pytz
 from typing import List
 
 router = APIRouter(
@@ -190,6 +193,18 @@ async def navigate_to_book(
 
         toggle_user_device(device_id=device.id, user=user, db=db, color=unique_color)
         await websocket_message_handler.add_device_color(device_id=device.id, username=user.username, color=unique_color)
+        taipei_tz = pytz.timezone("Asia/Taipei")
+        borrow_record = BookBorrowHistory(
+            user_id=user.id,
+            book_id=book.id,
+            type="start-nav",
+            color=unique_color,
+            timestamp=datetime.now(taipei_tz),
+        )
+        
+        db.add(borrow_record)
+        db.flush()
+        await websocket_message_handler.add_book_history(borrow_record)
         db.commit()
 
     except ResourceAlreadyExistsException as e:
@@ -258,3 +273,51 @@ async def cancel_navigation(
     await websocket_message_handler.cancel_navigation(user.username)
     await history.log_info(db=db, action="Cancel Navigation", details=f"Successfully canceled navigation for user: {user.username}.")
     return {"message": "Successfully canceled navigation!"}
+
+@router.get("/borrow-history", response_model=List[dict])
+async def get_user_borrow_history(
+    db: Session = Depends(get_db)
+):
+    records = db.query(BookBorrowHistory).order_by(BookBorrowHistory.timestamp.desc()).all()
+    return [
+            {
+                "id": r.id,
+                "book_id": r.book.id,
+                "color": r.color,
+                "username": r.user.username,
+                "timestamp": r.timestamp.isoformat()
+            }
+            for r in records
+        ]
+
+@router.delete("/delete-borrow-history/{book_id}")
+async def delete_borrow_history_by_book(
+    book_id: int,
+    db: Session = Depends(get_db)
+):
+    try:
+        records = db.query(BookBorrowHistory).filter(BookBorrowHistory.book_id == book_id).all()
+
+        if not records:
+            raise HTTPException(status_code=404, detail=f"No borrow history found for book ID {book_id}.")
+
+        for record in records:
+            db.delete(record)
+        db.commit()
+
+        await history.log_info(
+            db=db,
+            action="Delete Borrow History",
+            details=f"Deleted {len(records)} borrow history records for book ID: {book_id}"
+        )
+
+        return {"message": f"Successfully deleted {len(records)} borrow records for book ID {book_id}"}
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        await history.log_error(
+            db=db,
+            action="Delete Borrow History",
+            details=f"Database error: {str(e)}"
+        )
+        raise HTTPException(status_code=500, detail="Database error occurred while deleting borrow history.")

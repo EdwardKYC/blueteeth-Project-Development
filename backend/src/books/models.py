@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from src.database import Base
+from datetime import datetime, timezone
 
 class Book(Base):
     __tablename__ = "books"
@@ -27,3 +28,17 @@ class Book(Base):
             "device_id": self.device_id,
             "location": {"x": self.cord_x, "y": self.cord_y},
         }
+    
+
+class BookBorrowHistory(Base):
+    __tablename__ = "book_borrow_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    book_id = Column(Integer, ForeignKey("books.id"), nullable=False)
+    type = Column(String, nullable=False)
+    color = Column(String, nullable=False)
+    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    user = relationship("User")
+    book = relationship("Book")

@@ -1,7 +1,7 @@
 from .manager import WebSocketManager, SingletonMeta
 from src.history.models import HistoryLog
 from src.rasp.models import Rasp, Device
-from src.books.models import Book
+from src.books.models import Book, BookBorrowHistory
 from src.users.models import User
 
 class WebSocketMessageHandler(metaclass=SingletonMeta):
@@ -159,6 +159,19 @@ class WebSocketMessageHandler(metaclass=SingletonMeta):
             "payload" : {
                 "id": id,
                 "status": status
+            }
+        }
+        await self.manager.send_message(message)
+
+    async def add_book_history(self, history: BookBorrowHistory):
+        message = {
+            "type": "add_book_history",
+            "payload" : {
+                "id": history.id,
+                "book_id": history.book.id,
+                "color": history.color,
+                "username": history.user.username,
+                "timestamp": history.timestamp.isoformat()
             }
         }
         await self.manager.send_message(message)

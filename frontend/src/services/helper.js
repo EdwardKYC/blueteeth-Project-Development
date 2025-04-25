@@ -26,7 +26,8 @@ import {
     insertBook,
     addDeviceToBook,
     addUserToBook,
-    removeUserFromBook
+    removeUserFromBook,
+    addBorrowHistory
 } from "../reducers/bookSlice";
 import { insertHistory, clearHistory } from "../reducers/historySlice";
 
@@ -201,4 +202,12 @@ export const handleRemoveUser = ({ username }) => {
     rasps.forEach(({ id }) => {
         store.dispatch(removeUserFromRasp({ raspId: id, userName: username }));
     });
+};
+
+export const handleAddBorrowHistory = ({ id, book_id, username, timestamp, color }) => {
+	if (!id || !book_id || !username || !timestamp || !color) {
+		console.warn("Incomplete borrow history data", id, book_id, username, timestamp, color);
+		return;
+	}
+	store.dispatch(addBorrowHistory({ id, bookId: book_id, userName: username, timestamp: timestamp, color }));
 };
