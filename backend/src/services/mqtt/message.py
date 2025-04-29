@@ -43,13 +43,13 @@ class MQTTMessageHandler(metaclass=SingletonMeta):
         }
         self.mqtt_client.publish(topic, payload)
 
-    def cancel_device_navigation(self, device_id: str, user_name: str, db: Session):
+    def cancel_device_navigation(self, device_id: str, color: str, db: Session):
         """Publish navigation cancellation message."""
         rasp_id = self._get_rasp_id_from_device(device_id, db)
         topic = self.TOPIC_TEMPLATE.format(rasp_id=rasp_id)
         payload = {
             "action": "cancel_device_navigation",
-            "userName": user_name,
+            "color": color,
             "deviceId": device_id
         }
         self.mqtt_client.publish(topic, payload)
