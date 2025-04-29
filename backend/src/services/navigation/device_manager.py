@@ -1,6 +1,7 @@
 from src.rasp.models import Device
 from src.books.models import Book
 from src.users.models import UserDeviceLink
+from src.books.exceptions import NoAvailableColorException
 
 from sqlalchemy import exists
 from sqlalchemy.orm import Session
@@ -38,36 +39,20 @@ class DeviceManager:
         return device, unique_color
 
     def generate_unique_color(self) -> str:
-        def is_color_too_light(color: str) -> bool:
-            hex_color = color.lstrip("#")
-            r = int(hex_color[0:2], 16)
-            g = int(hex_color[2:4], 16)
-            b = int(hex_color[4:6], 16)
-            brightness = (r * 299 + g * 587 + b * 114) / 1000
-            return brightness >= 180 
-        
-        def color_distance(color1: str, color2: str) -> float:
-            """計算顏色之間的距離（使用 HSV 色彩空間）"""
-            r1, g1, b1 = int(color1[1:3], 16), int(color1[3:5], 16), int(color1[5:7], 16)
-            r2, g2, b2 = int(color2[1:3], 16), int(color2[3:5], 16), int(color2[5:7], 16)
-            
-            # 轉換為 HSV（避免亮度影響）
-            h1, s1, v1 = rgb_to_hsv(r1 / 255.0, g1 / 255.0, b1 / 255.0)
-            h2, s2, v2 = rgb_to_hsv(r2 / 255.0, g2 / 255.0, b2 / 255.0)
-
-            # 計算 HSV 距離
-            return ((h1 - h2) ** 2 + (s1 - s2) ** 2 + (v1 - v2) ** 2) ** 0.5
-
-        def is_color_too_similar(new_color: str, existing_colors: list[str]) -> bool:
-            """檢查新顏色是否與現有顏色過於相似"""
-            return any(color_distance(new_color, existing) < 0.2 for existing in existing_colors)
-
-        existing_colors = [
-            row[0] for row in self.db.query(UserDeviceLink.color).all()
+        available_colors = [
+            "#ed2939",  # 紅 Red
+            "#fb9417",  # 黃 Yellow
+            "#0b6623",  # 綠 Green
+            "#1338be",  # 藍 Blue
+            "#8a00c2",  # 紫 Purple
+            "#18848e",  # 青 Cyan
         ]
 
-        while True:
-            color = f"#{random.randint(0, 0xFFFFFF):06x}"
+        used_colors = {row[0] for row in self.db.query(UserDeviceLink.color).all() if row[0]}
 
-            if not is_color_too_light(color) and not is_color_too_similar(color, existing_colors):
-                return color
+        unused_colors = [color for color in available_colors if color not in used_colors]
+
+        if not unused_colors:
+            raise NoAvailableColorException()
+
+        return random.choice(unused_colors)

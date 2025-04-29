@@ -47,7 +47,7 @@ def toggle_user_device(user: User, db: Session, device_id: str = None, color: st
         else:
             device = db.query(Device).filter(Device.id == device_link.device_id).first()
             if device.status == "online":
-                mqtt_message_handler.cancel_device_navigation(device_id=device_link.device_id, user_name=user.username, db=db)
+                mqtt_message_handler.cancel_device_navigation(device_id=device_link.device_id, color=device_link.color, db=db)
             db.delete(device_link)
         return
 

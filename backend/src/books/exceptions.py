@@ -24,3 +24,8 @@ class ResourceAlreadyDeletedException(BusinessLogicException):
     def __init__(self):
         super().__init__(f"Resource already deleted.")
 
+class NoAvailableColorException(Exception):
+    """Raised when no more available colors exist"""
+    def __init__(self):
+        super().__init__(f"No available color.")
+

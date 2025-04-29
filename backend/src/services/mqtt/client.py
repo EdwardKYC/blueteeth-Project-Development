@@ -20,7 +20,6 @@ class MQTTClient(metaclass=SingletonMeta):
         try:
             self.client.connect(self.broker_address, self.port)
             self.client.loop_start()  
-            print("成功連接到 MQTT broker")
         except Exception as e:
             print(f"初始連接失敗，原因: {e}")
             self.connected = False
@@ -28,7 +27,6 @@ class MQTTClient(metaclass=SingletonMeta):
     def _on_connect(self, client, userdata, flags, rc):
         """Callback for successful connection."""
         if rc == 0:
-            print("MQTT 連接成功")
             self.connected = True
         else:
             print(f"MQTT 連接失敗，返回代碼: {rc}")
@@ -43,10 +41,8 @@ class MQTTClient(metaclass=SingletonMeta):
         """Reconnect to the MQTT broker."""
         while not self.connected:
             try:
-                print("嘗試重新連接到 MQTT broker...")
                 self.client.reconnect()
                 self.client.loop_start() 
-                print("重新連接成功")
                 self.connected = True
             except Exception as e:
                 print(f"重新連接失敗，原因: {e}")
@@ -54,7 +50,6 @@ class MQTTClient(metaclass=SingletonMeta):
 
     def publish(self, topic: str, payload: dict):
         try:
-            print(f"發布到主題：{topic}, 資訊如下：{json.dumps(payload)}")
             self.client.publish(topic, json.dumps(payload))
         except Exception as e:
             print(f"發布失敗，原因 {e}")

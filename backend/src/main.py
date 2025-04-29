@@ -28,9 +28,9 @@ app.add_middleware(
     allow_headers=["*"], 
 )
 
-@app.on_event("startup")
-async def startup_event():
-    asyncio.create_task(check_alive_status())
+# @app.on_event("startup")
+# async def startup_event():
+#     asyncio.create_task(check_alive_status())
 
 app.include_router(user_router, prefix="/v1")
 app.include_router(book_router, prefix="/v1")

@@ -12,7 +12,8 @@ import {
 	handleUpdateDeviceBattery,
 	handleRemoveUser,
 	handleToggleDeviceStatus,
-	handleToggleRaspStatus
+	handleToggleRaspStatus,
+	handleAddBorrowHistory
 } from "./helper";
 import { WS_URL } from '../config';
 
@@ -73,5 +74,7 @@ const handleWebSocketMessage = (message) => {
 		handleToggleRaspStatus(message.payload);
 	} else if (message.type === "toggle_device_status") {
 		handleToggleDeviceStatus(message.payload);
+	} else if (message.type === "add_book_history") {
+		handleAddBorrowHistory(message.payload);
 	}
 };

@@ -20,6 +20,11 @@ export const fetchBooks = async () => {
   return await response.json();
 };
 
+export const fetchBorrowHistory = async () => {
+  const response = await fetch(`${BASE_URL}/api/v1/books/borrow-history`);
+  return await response.json();
+};
+
 export const fetchHistoryLogs = async () => {
   const response = await fetch(`${BASE_URL}/api/v1/history/get-all-history`);
   if (!response.ok) {

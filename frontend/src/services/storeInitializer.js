@@ -1,5 +1,5 @@
-import { fetchUsers, fetchDevices, fetchRasps, fetchBooks, fetchHistoryLogs } from "./api";
-import { handleAddHistoryLog, handleRegisterBook, handleRegisterDevice, handleRegisterRasp, handleRegisterUser } from "./helper";
+import { fetchUsers, fetchDevices, fetchRasps, fetchBooks, fetchHistoryLogs, fetchBorrowHistory } from "./api";
+import { handleAddHistoryLog, handleRegisterBook, handleRegisterDevice, handleRegisterRasp, handleRegisterUser, handleAddBorrowHistory } from "./helper";
 
 export const initializeStore = async () => {
     try {
@@ -30,6 +30,11 @@ export const initializeStore = async () => {
         const historyData = await fetchHistoryLogs();
         historyData.forEach((log) => {
             handleAddHistoryLog(log);
+        });
+
+        const borrowHistoryData = await fetchBorrowHistory();
+        borrowHistoryData.forEach((history) => {
+            handleAddBorrowHistory(history);
         });
     } catch (error) {
         console.error("Error initializing store:", error);

@@ -3,6 +3,8 @@
 .user-page {
   font-family: 'Inter';
   padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .user-page h1 {
@@ -48,6 +50,5 @@
   font-size: 14px;
   white-space: nowrap;
   color: inherit;
-  width: 80px;
   background-color: transparent;
 }

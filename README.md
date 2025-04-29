@@ -188,7 +188,7 @@ mosquitto_sub -h localhost -p 1883 -t "rasp/rasp2"
 ```json
 {"action": "cancel_rasp_navigation", "userName": "yozen0405"}
 
-{"action": "cancel_device_navigation", "userName": "yozen0405", "deviceId": "device3"}
+{"action": "cancel_device_navigation", "color": "#038fc2", "deviceId": "device3"}
 
 {"action": "add_rasp_direction", "userName": "yozen0405", "direction": "RIGHT", "color": "#038fc2"}
 
