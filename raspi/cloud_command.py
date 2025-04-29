@@ -10,7 +10,7 @@ async def cancel_device_navigation(device_id, color):
     if device.client is None or not device.client.is_connected:
         print(f"[ERROR] 裝置 {device_id} 尚未連線或已斷線，無法傳送指令。")
         return
-    message = f"Cancel color:{color}"
+    message = f"Can:{color}"
     await send_message_to_ble_device(device.client, message)
     print(f"取消 {color} 指令已傳送到裝置 {device_id}")
 

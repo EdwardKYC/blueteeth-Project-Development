@@ -9,7 +9,7 @@ from nrf_command import send_message_to_ble_device, notification_handler
 
 # MQTT 設定
 BROKER_ADDRESS = "0.tcp.jp.ngrok.io"
-PORT = 19327
+PORT = 17268 
 DEVICE = "rasp1"
 TOPIC = "rasp/" + DEVICE 
 NOTIFY_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
