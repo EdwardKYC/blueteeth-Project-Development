@@ -10,6 +10,7 @@
 # 忽略虛擬環境
 .env/
 venv/
+myenv/
 __pycache__/
 
 # 忽略未追蹤的資料庫文件
